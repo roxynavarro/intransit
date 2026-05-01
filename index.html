@@ -81,6 +81,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 .mod-tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 8px; }
 .tag-london { background: var(--yellow); color: #fff; }
 .tag-sv { background: var(--black); color: var(--yellow); }
+.tag-other { background: var(--terracotta); color: #fff; }
 .mod-title-big { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; line-height: 1.1; }
 .mod-dates-big { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--mid); margin-top: 6px; letter-spacing: 0.05em; }
 .mod-venue { font-size: 0.82rem; color: var(--mid); margin-top: 5px; }
@@ -337,20 +338,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 
 <!-- MODULE 1 -->
 <div id="panel-m1" class="mod-panel">
-  <div class="mod-header-card">
-    <div>
-      <span class="mod-tag tag-london">London</span>
-      <div class="mod-title-big">Module 1 — Company</div>
-      <div class="mod-dates-big">July 12 – July 24, 2026 · 13 days</div>
-      <div class="mod-venue">📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE</div>
-      <div class="mod-venue" style="margin-top:4px">✈ SQ 306 · SIN 01:05 → LHR 08:10 · 11 Jul &nbsp;|&nbsp; SQ 313 · LGW 12:45 → SIN 09:05 · 26 Jul</div>
-      <div class="mod-venue" style="margin-top:4px">🍽 Welcome Dinner · The Union Club, Soho · Sun 12 Jul, 6–9pm</div>
-    </div>
-    <div class="mod-progress-wrap">
-      <div class="mod-progress-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="33"/><circle class="ring-fill" id="ring-m1" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/></svg><div class="ring-text" id="ring-m1-pct">0%</div></div>
-      <div class="mod-progress-label">Tasks Done</div>
-    </div>
-  </div>
+  <div class="mod-header-card" id="mhcard-m1"></div>
   <div class="inner-tabs">
     <button class="inner-tab active" onclick="switchInner('m1','tasks',this)">☑ Tasks</button>
     <button class="inner-tab" onclick="switchInner('m1','trips',this)">🗺 Side Trips</button>
@@ -368,20 +356,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 
 <!-- MODULE 2 -->
 <div id="panel-m2" class="mod-panel">
-  <div class="mod-header-card">
-    <div>
-      <span class="mod-tag tag-london">London</span>
-      <div class="mod-title-big">Module 2 — Product</div>
-      <div class="mod-dates-big">October 5 – October 16, 2026 · 12 days</div>
-      <div class="mod-venue">📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE</div>
-      <div class="mod-venue" style="margin-top:4px">✈ Full travel window: Sep 21 (Barcelona) → Oct 18 (London check-out)</div>
-      <div class="mod-venue" style="margin-top:4px">🏨 BCN: Hotel Balmoral Sep 21–25 ✅ · Paris: Hôtel Bonne Nouvelle Oct 1–4 ✅ · London: Hostelle Oct 4–18 ✅</div>
-    </div>
-    <div class="mod-progress-wrap">
-      <div class="mod-progress-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="33"/><circle class="ring-fill" id="ring-m2" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/></svg><div class="ring-text" id="ring-m2-pct">0%</div></div>
-      <div class="mod-progress-label">Tasks Done</div>
-    </div>
-  </div>
+  <div class="mod-header-card" id="mhcard-m2"></div>
   <div class="inner-tabs">
     <button class="inner-tab active" onclick="switchInner('m2','tasks',this)">☑ Tasks</button>
     <button class="inner-tab" onclick="switchInner('m2','trips',this)">🗺 Side Trips · BCN + Paris</button>
@@ -403,18 +378,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 
 <!-- MODULE 3 -->
 <div id="panel-m3" class="mod-panel">
-  <div class="mod-header-card">
-    <div>
-      <span class="mod-tag tag-sv">Silicon Valley</span>
-      <div class="mod-title-big">Module 3 — Start-Up</div>
-      <div class="mod-dates-big">January 11 – January 15, 2027 · 5 days</div>
-      <div class="mod-venue">🌉 Silicon Valley, USA</div>
-    </div>
-    <div class="mod-progress-wrap">
-      <div class="mod-progress-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="33"/><circle class="ring-fill" id="ring-m3" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/></svg><div class="ring-text" id="ring-m3-pct">0%</div></div>
-      <div class="mod-progress-label">Tasks Done</div>
-    </div>
-  </div>
+  <div class="mod-header-card" id="mhcard-m3"></div>
   <div class="inner-tabs">
     <button class="inner-tab active" onclick="switchInner('m3','tasks',this)">☑ Tasks</button>
     <button class="inner-tab" onclick="switchInner('m3','trips',this)">🗺 Side Trips</button>
@@ -431,18 +395,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 
 <!-- MODULE 4 -->
 <div id="panel-m4" class="mod-panel">
-  <div class="mod-header-card">
-    <div>
-      <span class="mod-tag tag-london">London</span>
-      <div class="mod-title-big">Module 4 — Team</div>
-      <div class="mod-dates-big">March 15 – March 26, 2027 · 12 days</div>
-      <div class="mod-venue">📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE</div>
-    </div>
-    <div class="mod-progress-wrap">
-      <div class="mod-progress-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="33"/><circle class="ring-fill" id="ring-m4" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/></svg><div class="ring-text" id="ring-m4-pct">0%</div></div>
-      <div class="mod-progress-label">Tasks Done</div>
-    </div>
-  </div>
+  <div class="mod-header-card" id="mhcard-m4"></div>
   <div class="inner-tabs">
     <button class="inner-tab active" onclick="switchInner('m4','tasks',this)">☑ Tasks</button>
     <button class="inner-tab" onclick="switchInner('m4','trips',this)">🗺 Side Trips</button>
@@ -458,18 +411,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
 
 <!-- MODULE 5 -->
 <div id="panel-m5" class="mod-panel">
-  <div class="mod-header-card">
-    <div>
-      <span class="mod-tag tag-london">London</span>
-      <div class="mod-title-big">Module 5 — World</div>
-      <div class="mod-dates-big">June 7 – June 18, 2027 · 12 days</div>
-      <div class="mod-venue">📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE</div>
-    </div>
-    <div class="mod-progress-wrap">
-      <div class="mod-progress-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="33"/><circle class="ring-fill" id="ring-m5" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/></svg><div class="ring-text" id="ring-m5-pct">0%</div></div>
-      <div class="mod-progress-label">Tasks Done</div>
-    </div>
-  </div>
+  <div class="mod-header-card" id="mhcard-m5"></div>
   <div class="inner-tabs">
     <button class="inner-tab active" onclick="switchInner('m5','tasks',this)">☑ Tasks</button>
     <button class="inner-tab" onclick="switchInner('m5','trips',this)">🗺 Side Trips</button>
@@ -629,7 +571,7 @@ const TRIPS = {
 
 // ─── SUPABASE CONFIG ─────────────────────────────────────────
 const SUPA_URL = 'https://dujaaudwjyjwqthfccpg.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1amFhdWR3anlqd3F0aGZjY3BnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MjEzNzMsImV4cCI6MjA5MzE5NzM3M30.zWYJ2ZMWuxddLr0eU_ExQAagTbel7WgahWpO2BD92N0'; // ← paste your anon key here
+const SUPA_KEY = 'YOUR_ANON_KEY_HERE'; // ← paste your anon key here
 const SUPA_ROW = 'intransit_v1'; // unique key for your data row
 
 // ─── STATE ───────────────────────────────────────────────────
@@ -713,6 +655,152 @@ function showToast(msg) {
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 1700);
+}
+
+// ─── MODULE HEADERS ──────────────────────────────────────────
+const MOD_HEADER_DEFAULTS = {
+  m1: { tag:'tag-london', tagLabel:'London', title:'Module 1 — Company', dates:'July 12 – July 24, 2026 · 13 days', lines:['📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE','✈ SQ 306 · SIN 01:05 → LHR 08:10 · 11 Jul | SQ 313 · LGW 12:45 → SIN 09:05 · 26 Jul','🍽 Welcome Dinner · The Union Club, Soho · Sun 12 Jul, 6–9pm'] },
+  m2: { tag:'tag-london', tagLabel:'London', title:'Module 2 — Product', dates:'October 5 – October 16, 2026 · 12 days', lines:['📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE','✈ Full travel window: Sep 21 (Barcelona) → Oct 18 (London check-out)','🏨 BCN: Hotel Balmoral Sep 21–25 ✅ · Paris: Hôtel Bonne Nouvelle Oct 1–4 ✅ · London: Hostelle Oct 4–18 ✅'] },
+  m3: { tag:'tag-sv',     tagLabel:'Silicon Valley', title:'Module 3 — Start-Up', dates:'January 11 – January 15, 2027 · 5 days', lines:['🌉 Silicon Valley, USA'] },
+  m4: { tag:'tag-london', tagLabel:'London', title:'Module 4 — Team', dates:'March 15 – March 26, 2027 · 12 days', lines:['📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE'] },
+  m5: { tag:'tag-london', tagLabel:'London', title:'Module 5 — World', dates:'June 7 – June 18, 2027 · 12 days', lines:['📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE'] },
+};
+
+function getModHeader(mod) {
+  const saved = S['mh_' + mod];
+  const def = MOD_HEADER_DEFAULTS[mod];
+  return {
+    tag:      saved?.tag      ?? def.tag,
+    tagLabel: saved?.tagLabel ?? def.tagLabel,
+    title:    saved?.title    ?? def.title,
+    dates:    saved?.dates    ?? def.dates,
+    lines:    saved?.lines    ?? [...def.lines],
+  };
+}
+
+function renderModHeader(mod) {
+  const el = document.getElementById('mhcard-' + mod);
+  if (!el) return;
+  const h = getModHeader(mod);
+  const ringId = 'ring-' + mod;
+  const pctId  = 'ring-' + mod + '-pct';
+
+  // view mode lines
+  const linesHtml = h.lines.map(l => `<div class="mod-venue" style="margin-top:4px">${l}</div>`).join('');
+
+  // edit mode line inputs
+  const lineInputs = h.lines.map((l, i) => `
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+      <input class="edit-input" style="flex:1" value="${l.replace(/"/g,'&quot;')}" oninput="updateModHeaderLine('${mod}',${i},this.value)">
+      <button onclick="deleteModHeaderLine('${mod}',${i})" style="background:none;border:none;color:var(--terracotta);cursor:pointer;font-size:1rem;padding:0 4px" title="Remove line">✕</button>
+    </div>`).join('');
+
+  el.innerHTML = `
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span class="mod-tag ${h.tag}" id="mhtag-${mod}">${h.tagLabel}</span>
+        <button class="task-icon-btn" onclick="toggleModHeaderEdit('${mod}')" title="Edit header" style="margin-left:auto">✏️</button>
+      </div>
+
+      <!-- VIEW MODE -->
+      <div id="mhview-${mod}">
+        <div class="mod-title-big">${h.title}</div>
+        <div class="mod-dates-big">${h.dates}</div>
+        ${linesHtml}
+      </div>
+
+      <!-- EDIT MODE -->
+      <div id="mhedit-${mod}" style="display:none">
+        <div class="edit-row"><div class="edit-label">Tag / Location</div>
+          <select class="badge-select" onchange="updateModHeaderTag('${mod}',this.value)">
+            <option value="tag-london"${h.tag==='tag-london'?' selected':''}>🇬🇧 London</option>
+            <option value="tag-sv"${h.tag==='tag-sv'?' selected':''}>🌉 Silicon Valley</option>
+            <option value="tag-other"${h.tag==='tag-other'?' selected':''}>📍 Other</option>
+          </select>
+        </div>
+        <div class="edit-row"><div class="edit-label">Module Title</div>
+          <input class="edit-input" value="${h.title.replace(/"/g,'&quot;')}" oninput="updateModHeaderField('${mod}','title',this.value)">
+        </div>
+        <div class="edit-row"><div class="edit-label">Dates</div>
+          <input class="edit-input" value="${h.dates.replace(/"/g,'&quot;')}" oninput="updateModHeaderField('${mod}','dates',this.value)">
+        </div>
+        <div class="edit-row"><div class="edit-label">Detail lines</div>
+          ${lineInputs}
+          <button class="add-task-btn" style="margin-top:4px" onclick="addModHeaderLine('${mod}')">+ Add line</button>
+        </div>
+        <button class="edit-save-btn" style="margin-top:8px" onclick="saveModHeader('${mod}')">Save header</button>
+      </div>
+    </div>
+
+    <div class="mod-progress-wrap">
+      <div class="mod-progress-ring">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle class="ring-bg" cx="40" cy="40" r="33"/>
+          <circle class="ring-fill" id="${ringId}" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/>
+        </svg>
+        <div class="ring-text" id="${pctId}">0%</div>
+      </div>
+      <div class="mod-progress-label">Tasks Done</div>
+    </div>`;
+}
+
+function toggleModHeaderEdit(mod) {
+  const view = document.getElementById('mhview-' + mod);
+  const edit = document.getElementById('mhedit-' + mod);
+  if (!view || !edit) return;
+  const isEditing = edit.style.display !== 'none';
+  view.style.display = isEditing ? 'block' : 'none';
+  edit.style.display = isEditing ? 'none' : 'block';
+}
+
+function updateModHeaderField(mod, field, val) {
+  if (!S['mh_' + mod]) S['mh_' + mod] = { ...JSON.parse(JSON.stringify(getModHeader(mod))) };
+  S['mh_' + mod][field] = val;
+  setS(S);
+}
+
+function updateModHeaderLine(mod, idx, val) {
+  if (!S['mh_' + mod]) S['mh_' + mod] = { ...JSON.parse(JSON.stringify(getModHeader(mod))) };
+  S['mh_' + mod].lines[idx] = val;
+  setS(S);
+}
+
+function deleteModHeaderLine(mod, idx) {
+  if (!S['mh_' + mod]) S['mh_' + mod] = { ...JSON.parse(JSON.stringify(getModHeader(mod))) };
+  S['mh_' + mod].lines.splice(idx, 1);
+  setS(S);
+  renderModHeader(mod);
+  toggleModHeaderEdit(mod); // re-open edit
+  document.getElementById('mhedit-' + mod).style.display = 'block';
+  document.getElementById('mhview-' + mod).style.display = 'none';
+}
+
+function addModHeaderLine(mod) {
+  if (!S['mh_' + mod]) S['mh_' + mod] = { ...JSON.parse(JSON.stringify(getModHeader(mod))) };
+  S['mh_' + mod].lines.push('✦ New detail line');
+  setS(S);
+  renderModHeader(mod);
+  document.getElementById('mhedit-' + mod).style.display = 'block';
+  document.getElementById('mhview-' + mod).style.display = 'none';
+}
+
+function updateModHeaderTag(mod, tagVal) {
+  if (!S['mh_' + mod]) S['mh_' + mod] = { ...JSON.parse(JSON.stringify(getModHeader(mod))) };
+  const labels = { 'tag-london':'London', 'tag-sv':'Silicon Valley', 'tag-other':'Other' };
+  S['mh_' + mod].tag = tagVal;
+  S['mh_' + mod].tagLabel = labels[tagVal] || 'Other';
+  setS(S);
+}
+
+function saveModHeader(mod) {
+  setS(S);
+  renderModHeader(mod);
+  updateRing(mod); // re-attach ring after re-render
+  showToast('Header saved ✓');
+}
+
+function renderAllModHeaders() {
+  ['m1','m2','m3','m4','m5'].forEach(renderModHeader);
 }
 
 // ─── NAV ─────────────────────────────────────────────────────
@@ -1497,7 +1585,8 @@ function init() {
   document.getElementById('daysLeft').textContent = days > 0 ? days + ' days to M1' : 'Bon voyage!';
   document.getElementById('journalDate').textContent = today.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-  // Render all task groups
+  // Render all module headers
+  renderAllModHeaders();
   Object.entries(TASKS).forEach(([key, _]) => renderTasks('tg-' + key, null));
 
   // Render all trips
