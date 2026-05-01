@@ -343,6 +343,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
     <button class="inner-tab active" onclick="switchInner('m1','tasks',this)">☑ Tasks</button>
     <button class="inner-tab" onclick="switchInner('m1','trips',this)">🗺 Side Trips</button>
     <button class="inner-tab" onclick="switchInner('m1','budget',this)">💷 Budget</button>
+    <button class="inner-tab" onclick="switchInner('m1','journal',this)">📓 Notes</button>
   </div>
   <div id="m1-tasks" class="inner-panel active">
     <div class="sec-label">Visa &amp; Documents</div><div id="tg-m1-visa"></div>
@@ -352,6 +353,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
   </div>
   <div id="m1-trips" class="inner-panel"><div id="trip-m1"></div></div>
   <div id="m1-budget" class="inner-panel"><div id="budget-m1"></div></div>
+  <div id="m1-journal" class="inner-panel"><div id="modjournal-m1"></div></div>
 </div>
 
 <!-- MODULE 2 -->
@@ -361,6 +363,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
     <button class="inner-tab active" onclick="switchInner('m2','tasks',this)">☑ Tasks</button>
     <button class="inner-tab" onclick="switchInner('m2','trips',this)">🗺 Side Trips</button>
     <button class="inner-tab" onclick="switchInner('m2','budget',this)">💷 Budget</button>
+    <button class="inner-tab" onclick="switchInner('m2','journal',this)">📓 Notes</button>
   </div>
   <div id="m2-tasks" class="inner-panel active">
     <div class="sec-label">Flights &amp; Transfers (SIN→BCN→Paris→London→SIN)</div><div id="tg-m2-flights"></div>
@@ -374,6 +377,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
     <div id="budget-m2"></div>
 
   </div>
+  <div id="m2-journal" class="inner-panel"><div id="modjournal-m2"></div></div>
 </div>
 
 <!-- MODULE 3 -->
@@ -383,6 +387,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
     <button class="inner-tab active" onclick="switchInner('m3','tasks',this)">☑ Tasks</button>
     <button class="inner-tab" onclick="switchInner('m3','trips',this)">🗺 Side Trips</button>
     <button class="inner-tab" onclick="switchInner('m3','budget',this)">💵 Budget</button>
+    <button class="inner-tab" onclick="switchInner('m3','journal',this)">📓 Notes</button>
   </div>
   <div id="m3-tasks" class="inner-panel active">
     <div class="sec-label">Visa &amp; Documents (USA)</div><div id="tg-m3-visa"></div>
@@ -391,6 +396,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
   </div>
   <div id="m3-trips" class="inner-panel"><div id="trip-m3"></div></div>
   <div id="m3-budget" class="inner-panel"><div id="budget-m3"></div></div>
+  <div id="m3-journal" class="inner-panel"><div id="modjournal-m3"></div></div>
 </div>
 
 <!-- MODULE 4 -->
@@ -400,6 +406,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
     <button class="inner-tab active" onclick="switchInner('m4','tasks',this)">☑ Tasks</button>
     <button class="inner-tab" onclick="switchInner('m4','trips',this)">🗺 Side Trips</button>
     <button class="inner-tab" onclick="switchInner('m4','budget',this)">💷 Budget</button>
+    <button class="inner-tab" onclick="switchInner('m4','journal',this)">📓 Notes</button>
   </div>
   <div id="m4-tasks" class="inner-panel active">
     <div class="sec-label">Flights &amp; Travel</div><div id="tg-m4-flights"></div>
@@ -407,6 +414,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
   </div>
   <div id="m4-trips" class="inner-panel"><div id="trip-m4"></div></div>
   <div id="m4-budget" class="inner-panel"><div id="budget-m4"></div></div>
+  <div id="m4-journal" class="inner-panel"><div id="modjournal-m4"></div></div>
 </div>
 
 <!-- MODULE 5 -->
@@ -416,6 +424,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
     <button class="inner-tab active" onclick="switchInner('m5','tasks',this)">☑ Tasks</button>
     <button class="inner-tab" onclick="switchInner('m5','trips',this)">🗺 Side Trips</button>
     <button class="inner-tab" onclick="switchInner('m5','budget',this)">💷 Budget</button>
+    <button class="inner-tab" onclick="switchInner('m5','journal',this)">📓 Notes</button>
   </div>
   <div id="m5-tasks" class="inner-panel active">
     <div class="sec-label">Flights &amp; Travel</div><div id="tg-m5-flights"></div>
@@ -423,6 +432,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
   </div>
   <div id="m5-trips" class="inner-panel"><div id="trip-m5"></div></div>
   <div id="m5-budget" class="inner-panel"><div id="budget-m5"></div></div>
+  <div id="m5-journal" class="inner-panel"><div id="modjournal-m5"></div></div>
 </div>
 
 
@@ -647,6 +657,7 @@ function reRenderAll() {
   Object.entries(TRIPS).forEach(([mod, trips]) => renderTrips('trip-' + mod, trips, mod));
   ['m1','m2','m3','m4','m5'].forEach(mod => renderBudget('budget-' + mod, mod));
   updateAllProgress();
+  ['m1','m2','m3','m4','m5'].forEach(renderModJournal);
   loadJournal();
 }
 
@@ -1496,7 +1507,7 @@ function renderSideTripBudgets(mod) {
       </tr>`;
     }).join('');
 
-    return `<div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden">
+    return `<div id="stbudget-${mod}-${ti}" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden">
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px">
         <input style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;border:none;background:transparent;outline:none;color:var(--ink);flex:1" value="${name}" placeholder="Trip name" oninput="renameSideTrip('${mod}',${ti},this.value)">
         <div style="display:flex;align-items:baseline;gap:4px">
@@ -1511,13 +1522,13 @@ function renderSideTripBudgets(mod) {
         <tfoot><tr>
           <td colspan="3" class="budget-tfoot-label">Total</td>
           <td style="text-align:right;padding:12px 0 4px">
-            <div class="budget-tfoot-total" style="color:${over?'var(--terracotta)':'var(--ink)'};font-size:1.1rem">S$${Math.round(spent).toLocaleString()}</div>
-            <div class="budget-tfoot-remaining" style="color:${over?'var(--terracotta)':'var(--green)'}">
+            <div class="st-foot-total" style="color:${over?'var(--terracotta)':'var(--ink)'};font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700">S$${Math.round(spent).toLocaleString()}</div>
+            <div class="st-foot-rem budget-tfoot-remaining" style="color:${over?'var(--terracotta)':'var(--green)'}">
               ${total ? (over?'⚠ over by S$'+Math.round(spent-total).toLocaleString():'S$'+Math.round(rem).toLocaleString()+' left') : '—'}
             </div>
           </td>
           <td style="text-align:right;padding:12px 0 4px">
-            <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--mid)">€${Math.round(sgdToLocal(spent,stRate)||0).toLocaleString()}</div>
+            <div class="st-foot-eur" style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--mid)">€${Math.round(sgdToLocal(spent,stRate)||0).toLocaleString()}</div>
             <div style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--mid);margin-top:2px">EUR equiv.</div>
           </td>
         </tr></tfoot></table>
@@ -1604,7 +1615,17 @@ function onSideTripEUR(mod, ti, key, val) {
 function updateSideTripFxRate(mod, ti, val) {
   S['stfx_'+mod+'_'+ti] = parseFloat(val) || SIDETRIP_CURRENCY.defaultRate;
   setS(S);
-  renderSideTripBudgets(mod);
+  const rate = getSideTripRate(mod, ti);
+  // update EUR fields in place — no re-render
+  const t = getSideTripBudgets(mod)[ti] || {};
+  const allRows = [...SIDETRIP_DEFAULT_ROWS, ...(t.customRows||[])];
+  allRows.forEach(r => {
+    const sgdEl = document.getElementById('stsgd-'+mod+'-'+ti+'-'+r.key);
+    const eurEl = document.getElementById('steur-'+mod+'-'+ti+'-'+r.key);
+    if (sgdEl?.value && eurEl) eurEl.value = sgdToLocal(sgdEl.value, rate);
+  });
+  const textEl = document.getElementById('stfx-text-'+mod+'-'+ti);
+  if (textEl) textEl.textContent = 'SGD 1 = €' + (1/rate).toFixed(4) + ' EUR';
 }
 function addSideTripBudget(mod) { document.getElementById('st-form-'+mod).style.display='block'; }
 
@@ -1633,7 +1654,24 @@ function updateSideTripRow(mod, ti, key, val) {
   if (!t.rows[key]) t.rows[key] = { amount:'', note:'' };
   t.rows[key].amount = val;
   setS(S);
-  renderSideTripBudgets(mod);
+  // update totals in place — no full re-render
+  const allRows = [...SIDETRIP_DEFAULT_ROWS, ...(t.customRows||[])];
+  const spent = allRows.reduce((s,r) => s + (parseFloat(t.rows?.[r.key]?.amount)||0), 0);
+  const total = parseFloat(t.total) || 0;
+  const rate = getSideTripRate(mod, ti);
+  const rem = total - spent;
+  const over = spent > total;
+  const footTotal = document.querySelector('#stbudget-'+mod+'-'+ti+' .st-foot-total');
+  const footRem   = document.querySelector('#stbudget-'+mod+'-'+ti+' .st-foot-rem');
+  const footEur   = document.querySelector('#stbudget-'+mod+'-'+ti+' .st-foot-eur');
+  const prog      = document.querySelector('#stbudget-'+mod+'-'+ti+' .budget-progress-fill');
+  const progPct   = document.querySelector('#stbudget-'+mod+'-'+ti+' .budget-progress-labels span:nth-child(2)');
+  if (footTotal) { footTotal.textContent='S$'+Math.round(spent).toLocaleString(); footTotal.style.color=over?'var(--terracotta)':'var(--ink)'; }
+  if (footRem)   { footRem.textContent=total?(over?'⚠ over by S$'+Math.round(spent-total).toLocaleString():'S$'+Math.round(rem).toLocaleString()+' left'):'—'; footRem.style.color=over?'var(--terracotta)':'var(--green)'; }
+  if (footEur)   footEur.textContent = '€'+Math.round(sgdToLocal(spent,rate)||0).toLocaleString();
+  const pct = total ? Math.min(100, Math.round(spent/total*100)) : 0;
+  if (prog)    { prog.style.width=pct+'%'; prog.style.background=over?'var(--terracotta)':'var(--yellow)'; }
+  if (progPct) progPct.textContent = pct+'% used';
 }
 function updateSideTripNote(mod, ti, key, val) {
   const t = getSideTripBudgets(mod)[ti];
@@ -1736,6 +1774,42 @@ function renderOverviewSnapshot() {
 
 // ─── FAMILY BUDGET ────────────────────────────────────────────
 
+// ─── PER-MODULE JOURNAL ──────────────────────────────────────
+function renderModJournal(mod) {
+  const el = document.getElementById('modjournal-' + mod);
+  if (!el) return;
+  const today = new Date().toLocaleDateString('en-GB', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const entries = S['mj_' + mod] || [];
+  el.innerHTML = `
+    <div class="journal-new">
+      <div class="journal-label">${today}</div>
+      <textarea class="journal-textarea" id="mjinput-${mod}" placeholder="Notes, reflections, things to remember for this module…"></textarea>
+      <button class="journal-save-btn" onclick="saveModJournal('${mod}')">Save Entry →</button>
+    </div>
+    <div class="sec-label" style="margin-top:4px">Past Entries</div>
+    <div>
+      ${entries.length
+        ? entries.map(e => `<div class="journal-entry">
+            <div class="journal-entry-date">${new Date(e.d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
+            <div class="journal-entry-text">${e.t}</div>
+          </div>`).join('')
+        : '<p style="color:var(--mid);font-style:italic;font-size:0.83rem">No entries yet for this module ✦</p>'
+      }
+    </div>`;
+}
+
+function saveModJournal(mod) {
+  const el = document.getElementById('mjinput-' + mod);
+  const txt = el?.value.trim();
+  if (!txt) return;
+  if (!S['mj_' + mod]) S['mj_' + mod] = [];
+  S['mj_' + mod].unshift({ d: new Date().toISOString(), t: txt });
+  setS(S);
+  el.value = '';
+  renderModJournal(mod);
+  showToast('Entry saved ✓');
+}
+
 // ─── JOURNAL ─────────────────────────────────────────────────
 function saveJournalEntry() {
   const txt = document.getElementById('journalInput').value.trim();
@@ -1782,6 +1856,7 @@ function init() {
   });
 
   updateAllProgress();
+  ['m1','m2','m3','m4','m5'].forEach(renderModJournal);
   loadJournal();
 }
 
