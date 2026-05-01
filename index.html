@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>In Transit</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow: #C49A00;
+  --yellow-light: #F5E6B8;
+  --black: #0D0D0D;
+  --cream: #FAF7F2;
+  --warm: #FFFEF8;
+  --light: #EAE6DC;
+  --mid: #6B6560;
+  --red: #C0574A;
+  --terracotta: #C0574A;
+  --green: #3D6B5A;
+  --blue: #1D3557;
+  --ink: #1A1916;
+  --border: #DDD9CF;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+
+.topbar { background: var(--black); height: 58px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 200; border-bottom: 3px solid var(--yellow); }
+.topbar-brand { font-family: 'Playfair Display', serif; color: var(--yellow); font-size: 1rem; font-style: italic; letter-spacing: 0.03em; }
+.topbar-meta { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #555; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.pill { font-family: 'DM Mono', monospace; font-size: 0.65rem; padding: 5px 12px; border-radius: 20px; letter-spacing: 0.04em; }
+.pill-yellow { background: var(--yellow); color: #fff; }
+.pill-outline { border: 1px solid #333; color: #888; }
+
+.hero { background: var(--black); padding: 52px 0 44px; }
+.hero-inner { max-width: 1120px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end; }
+.hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--yellow); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; }
+.hero-h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 5vw, 4rem); color: #fff; line-height: 1.05; font-weight: 900; }
+.hero-h1 em { color: var(--yellow); font-style: italic; }
+.hero-sub { color: #666; font-size: 0.88rem; margin-top: 14px; line-height: 1.75; max-width: 480px; }
+.hero-stats { display: flex; flex-direction: column; gap: 12px; }
+.stat { border: 1px solid #222; padding: 12px 18px; border-radius: 8px; text-align: right; }
+.stat-n { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--yellow); font-weight: 700; line-height: 1; }
+.stat-l { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: #555; text-transform: uppercase; letter-spacing: 0.15em; margin-top: 3px; }
+
+.mod-nav-wrap { background: var(--black); border-bottom: 2px solid #1a1a1a; }
+.mod-nav-inner { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+.mod-nav { display: flex; gap: 4px; overflow-x: auto; padding-top: 12px; }
+.mod-nav-btn {
+  padding: 9px 18px 10px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: transparent;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.64rem;
+  color: #555;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: all 0.15s;
+  border-radius: 7px 7px 0 0;
+  position: relative;
+  bottom: -2px;
+}
+.mod-nav-btn:hover { color: #999; background: #111; }
+.mod-nav-btn.active {
+  color: var(--yellow);
+  background: var(--cream);
+  border-color: #333;
+  border-bottom-color: var(--cream);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.main { max-width: 1120px; margin: 0 auto; padding: 40px 32px; }
+.mod-panel { display: none; }
+.mod-panel.active { display: block; }
+
+.mod-header-card { background: var(--warm); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 28px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; }
+.mod-tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 8px; }
+.tag-london { background: var(--yellow); color: #fff; }
+.tag-sv { background: var(--black); color: var(--yellow); }
+.mod-title-big { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; line-height: 1.1; }
+.mod-dates-big { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--mid); margin-top: 6px; letter-spacing: 0.05em; }
+.mod-venue { font-size: 0.82rem; color: var(--mid); margin-top: 5px; }
+.mod-progress-wrap { min-width: 130px; text-align: center; }
+.mod-progress-ring { position: relative; width: 80px; height: 80px; margin: 0 auto 8px; }
+.mod-progress-ring svg { transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: var(--light); stroke-width: 6; }
+.ring-fill { fill: none; stroke: var(--yellow); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+.ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+.mod-progress-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--mid); letter-spacing: 0.1em; text-transform: uppercase; }
+
+.inner-tabs { display: flex; gap: 3px; background: var(--light); padding: 3px; border-radius: 9px; margin-bottom: 28px; }
+.inner-tab { flex: 1; padding: 9px 12px; border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500; color: var(--mid); cursor: pointer; border-radius: 7px; transition: all 0.15s; white-space: nowrap; text-align: center; }
+.inner-tab.active { background: var(--black); color: var(--yellow); }
+.inner-tab:hover:not(.active) { background: #d5d1c7; }
+.inner-panel { display: none; }
+.inner-panel.active { display: block; }
+
+.sec-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mid); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.task-item { background: var(--warm); border: 1px solid var(--border); border-radius: 9px; margin-bottom: 8px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
+.task-item:hover { border-color: #c9c5bb; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+.task-item.done { opacity: 0.52; background: #f3f0ea; }
+.task-item.done .task-text { text-decoration: line-through; color: var(--mid); }
+.task-row { display: flex; align-items: flex-start; gap: 12px; padding: 13px 14px; cursor: pointer; }
+.chk { width: 19px; height: 19px; border: 2px solid var(--black); border-radius: 4px; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.task-item.done .chk { background: var(--green); border-color: var(--green); }
+.chk-tick { display: none; color: #fff; font-size: 11px; font-weight: 700; }
+.task-item.done .chk-tick { display: block; }
+.task-body { flex: 1; min-width: 0; }
+.task-text { font-size: 0.875rem; line-height: 1.5; color: var(--ink); }
+.task-hint { font-size: 0.73rem; color: var(--mid); margin-top: 2px; font-style: italic; line-height: 1.4; }
+.task-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }
+.task-item:hover .task-actions { opacity: 1; }
+.task-icon-btn { background: transparent; border: 1px solid var(--border); color: var(--mid); font-size: 0.75rem; width: 26px; height: 26px; border-radius: 5px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; flex-shrink: 0; }
+.task-icon-btn:hover { background: var(--black); color: var(--yellow); border-color: var(--black); }
+.task-icon-btn.del:hover { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+.task-icon-btn.has-note { background: var(--yellow-light); color: var(--yellow); border-color: var(--yellow); }
+.badge { font-family: 'DM Mono', monospace; font-size: 0.58rem; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.04em; white-space: nowrap; }
+.b-urgent { background: #FAEDEB; color: #9B3D33; border: 1px solid #E8A99E; }
+.b-soon { background: #FAF0D7; color: #7A5500; border: 1px solid #D4A84B; }
+.b-done { background: #E4F0EB; color: #2A5445; border: 1px solid #8DBFB0; }
+.b-gap { background: #FAEDEB; color: #9B3D33; border: 1px solid #E8A99E; }
+.b-info { background: #EBF5FB; color: #1A5276; border: 1px solid #aed6f1; }
+.b-idea { background: #F5EEF8; color: #5D3478; border: 1px solid #C39BD3; }
+.note-btn { background: transparent; border: 1px solid var(--border); color: var(--mid); font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 5px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.note-btn:hover { background: var(--black); color: var(--yellow); border-color: var(--black); }
+
+/* ── TASK EDITING ── */
+.edit-btn { background: transparent; border: 1px solid var(--border); color: var(--mid); font-family: 'DM Mono', monospace; font-size: 0.58rem; padding: 3px 8px; border-radius: 5px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.edit-btn:hover { background: var(--yellow); color: #fff; border-color: var(--yellow); }
+.del-btn { background: transparent; border: 1px solid var(--border); color: var(--mid); font-family: 'DM Mono', monospace; font-size: 0.65rem; padding: 2px 7px; border-radius: 5px; cursor: pointer; transition: all 0.15s; line-height: 1; }
+.del-btn:hover { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+.task-edit-area { padding: 0 14px 14px 46px; display: none; }
+.task-edit-area.open { display: block; animation: slideDown 0.15s ease; }
+.edit-row { margin-bottom: 8px; }
+.edit-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--mid); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.edit-input { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--ink); background: var(--cream); outline: none; transition: border 0.15s; }
+.edit-input:focus { border-color: var(--yellow); }
+.badge-select { border: 1px solid var(--border); border-radius: 7px; padding: 7px 10px; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--ink); background: var(--cream); outline: none; cursor: pointer; width: 100%; }
+.edit-save-btn { background: var(--black); color: var(--yellow); border: none; padding: 7px 16px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s; margin-top: 4px; }
+.edit-save-btn:hover { background: var(--yellow); color: #fff; }
+.add-task-btn { width: 100%; padding: 11px; border: 2px dashed var(--border); border-radius: 9px; background: transparent; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--mid); letter-spacing: 0.08em; transition: all 0.15s; margin-top: 8px; }
+.add-task-btn:hover { border-color: var(--yellow); color: var(--yellow); background: var(--warm); }
+
+/* ── EDITABLE TRIP CARDS ── */
+.trip-edit-btn { background: transparent; border: 1px solid var(--border); color: var(--mid); font-family: 'DM Mono', monospace; font-size: 0.58rem; padding: 3px 8px; border-radius: 5px; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+.trip-edit-btn:hover { background: var(--yellow); color: #fff; border-color: var(--yellow); }
+.trip-edit-panel { display: none; padding: 14px; border-top: 1px solid var(--border); background: var(--cream); }
+.trip-edit-panel.open { display: block; }
+.trip-edit-input { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--ink); background: var(--warm); outline: none; margin-bottom: 8px; transition: border 0.15s; }
+.trip-edit-input:focus { border-color: var(--yellow); }
+.chip-edit-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.chip-edit { display: flex; align-items: center; gap: 4px; background: var(--warm); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; font-size: 0.73rem; color: var(--mid); }
+.chip-del { background: none; border: none; color: var(--terracotta); cursor: pointer; font-size: 0.8rem; line-height: 1; padding: 0; }
+.chip-add-input { border: 1px dashed var(--border); border-radius: 20px; padding: 4px 10px; font-size: 0.73rem; outline: none; background: transparent; color: var(--ink); width: 140px; }
+.chip-add-input:focus { border-color: var(--yellow); }
+.note-btn.has-note { background: var(--yellow-light); color: var(--yellow); border-color: var(--yellow); }
+
+.note-area { display: none; padding: 0 14px 14px 46px; }
+.note-area.open { display: block; animation: slideDown 0.15s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.note-textarea { width: 100%; min-height: 68px; border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; line-height: 1.6; color: var(--ink); background: var(--cream); resize: vertical; outline: none; transition: border 0.15s; }
+.note-textarea:focus { border-color: var(--black); }
+.note-save-btn { margin-top: 7px; background: var(--black); color: var(--yellow); border: none; padding: 7px 16px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s; }
+.note-save-btn:hover { background: var(--yellow); color: #fff; }
+.note-saved-flash { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--green); margin-left: 10px; opacity: 0; transition: opacity 0.3s; }
+.note-saved-flash.show { opacity: 1; }
+
+.trip-card { background: var(--warm); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 14px; }
+.trip-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+.trip-name { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; }
+.trip-desc { font-size: 0.8rem; color: var(--mid); margin-top: 4px; line-height: 1.55; }
+.trip-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--mid); margin-top: 6px; letter-spacing: 0.04em; }
+.trip-chips { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+.trip-chip { font-size: 0.73rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--cream); cursor: pointer; transition: all 0.15s; color: var(--mid); }
+.trip-chip:hover { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+.trip-chip.checked { background: var(--green); color: #fff; border-color: var(--green); }
+
+.budget-total-card { background: var(--black); color: #fff; border-radius: 12px; padding: 22px 26px; margin-bottom: 18px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.budget-left-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: #666; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
+.budget-rem-val { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; }
+.budget-rem-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #666; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+.budget-right { text-align: right; }
+
+.budget-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+.budget-table thead tr { border-bottom: 2px solid var(--black); }
+.budget-table thead th { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid); padding: 0 0 10px 0; text-align: left; font-weight: 400; }
+.budget-table thead th:last-child { text-align: right; }
+.budget-table tbody tr { border-bottom: 1px solid var(--border); }
+.budget-table tbody tr:last-child { border-bottom: none; }
+.budget-table tbody td { padding: 14px 0; vertical-align: middle; }
+.budget-row-icon { font-size: 1.1rem; width: 32px; }
+.budget-row-label { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+.budget-row-note { width: 100%; max-width: 260px; border: none; border-bottom: 1px dashed var(--border); background: transparent; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; color: var(--mid); font-style: italic; outline: none; padding: 2px 0; transition: border-color 0.15s; }
+.budget-row-note:focus { border-bottom-color: var(--black); color: var(--ink); font-style: normal; }
+.budget-row-note::placeholder { color: var(--border); }
+.budget-row-input-wrap { display: flex; align-items: center; gap: 5px; justify-content: flex-end; }
+.budget-row-currency { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--mid); }
+.budget-row-input { width: 100px; border: 1px solid var(--border); border-radius: 7px; padding: 7px 10px; font-family: 'DM Mono', monospace; font-size: 0.9rem; color: var(--ink); background: var(--warm); text-align: right; outline: none; transition: border-color 0.15s; }
+.budget-row-input:focus { border-color: var(--yellow); }
+.budget-table tfoot tr { border-top: 2px solid var(--black); }
+.budget-table tfoot td { padding: 16px 0 4px; }
+.budget-tfoot-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); }
+.budget-tfoot-total { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-align: right; }
+.budget-tfoot-remaining { font-family: 'DM Mono', monospace; font-size: 0.68rem; text-align: right; margin-top: 3px; }
+.budget-progress-wrap { margin: 20px 0 0; }
+.budget-progress-bar { height: 8px; background: var(--light); border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+.budget-progress-fill { height: 100%; background: var(--yellow); border-radius: 4px; transition: width 0.4s ease; }
+.budget-progress-labels { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--mid); }
+.budget-add-btn { width: 100%; padding: 12px; border: 2px dashed var(--border); border-radius: 10px; background: transparent; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--mid); letter-spacing: 0.08em; transition: all 0.15s; margin-top: 16px; }
+.budget-add-btn:hover { border-color: var(--terracotta); color: var(--terracotta); background: #FAEDEB; }
+
+
+
+/* ── JOURNAL ── */
+.journal-new { background: var(--warm); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 20px; }
+.journal-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--mid); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+.journal-textarea { width: 100%; min-height: 110px; border: 1px solid var(--border); border-radius: 7px; padding: 12px 14px; font-family: 'Playfair Display', serif; font-size: 0.92rem; line-height: 1.8; color: var(--ink); background: var(--cream); resize: vertical; outline: none; transition: border 0.15s; }
+.journal-textarea:focus { border-color: var(--black); }
+.journal-save-btn { margin-top: 8px; background: var(--black); color: var(--yellow); border: none; padding: 9px 20px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s; }
+.journal-save-btn:hover { background: var(--yellow); color: #fff; }
+.journal-entry { background: var(--warm); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 10px; }
+.journal-entry-date { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--mid); letter-spacing: 0.1em; margin-bottom: 8px; }
+.journal-entry-text { font-family: 'Playfair Display', serif; font-size: 0.9rem; line-height: 1.8; white-space: pre-wrap; }
+
+/* ── OVERVIEW ── */
+.overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.ov-card { background: var(--warm); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.ov-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--mid); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 5px; }
+.ov-val { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; }
+.ov-sub { font-size: 0.73rem; color: var(--mid); margin-top: 2px; }
+
+/* ── STICKY NOTE ── */
+.sticky { background: var(--yellow-light); padding: 16px 20px; border-radius: 2px; box-shadow: 3px 4px 0 rgba(0,0,0,0.10); font-family: 'Playfair Display', serif; font-size: 0.9rem; line-height: 1.75; color: #5A3E00; border-left: 4px solid var(--yellow); transform: rotate(-1deg); margin-bottom: 28px; position: relative; }
+.sticky::before { content: '📌'; position: absolute; top: -10px; left: 18px; font-size: 1.1rem; }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 22px; right: 22px; background: var(--black); color: var(--yellow); padding: 9px 18px; border-radius: 8px; font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.05em; opacity: 0; transform: translateY(8px); transition: all 0.25s; pointer-events: none; z-index: 300; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+
+
+/* ── MID SCREENS: mod-header-card at ~900px ── */
+@media (max-width: 960px) {
+  .mod-header-card { grid-template-columns: 1fr; }
+  .mod-progress-wrap { display: flex; align-items: center; gap: 16px; text-align: left; justify-content: flex-start; }
+  .mod-progress-ring { margin: 0; }
+  .budget-row-note { max-width: 100%; }
+}
+
+/* ── INNER TABS: wrap on overflow ── */
+@media (max-width: 860px) {
+  .inner-tabs { flex-wrap: wrap; }
+  .inner-tab { flex: none; }
+}
+
+/* ── MOBILE ── */
+@media (max-width: 680px) {
+  .hero-inner { grid-template-columns: 1fr; padding: 32px 16px 28px; }
+  .hero-stats { flex-direction: row; gap: 8px; }
+  .stat { flex: 1; }
+  .main { padding: 24px 16px; }
+  .topbar { padding: 0 16px; }
+  .topbar-meta { display: none; }
+  .mod-nav-wrap { padding: 0 16px; }
+  .mod-header-card { grid-template-columns: 1fr; }
+  .budget-total-card { flex-direction: column; gap: 12px; }
+  .budget-right { text-align: left; }
+  .budget-row-note { max-width: 100%; }
+  .inner-tabs { flex-wrap: wrap; }
+  .inner-tab { flex: none; font-size: 0.75rem; padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-brand">In Transit</div>
+    <div class="topbar-meta">Design Leaders Programme · 2026–2027</div>
+  </div>
+  <div class="topbar-right">
+    <span class="pill pill-outline" id="daysLeft">—</span>
+    <span class="pill pill-yellow" id="globalPct">0% done</span>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">✦ Design Leaders Programme — 5 Modules · 3 Countries</div>
+      <h1 class="hero-h1">London<br><em>awaits.</em></h1>
+      <p class="hero-sub">Your personal command centre — from visa queues to Canary Wharf sunsets, Edinburgh weekends to Yosemite detours. All your prep, per module, beautifully organised.</p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-n" id="herodays">—</div><div class="stat-l">Days to M1</div></div>
+      <div class="stat"><div class="stat-n" id="heroDone">0</div><div class="stat-l">Tasks Done</div></div>
+      <div class="stat"><div class="stat-n">5</div><div class="stat-l">Modules</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="mod-nav-wrap">
+<div class="mod-nav-inner">
+<div class="mod-nav">
+  <button class="mod-nav-btn active" onclick="switchMod('overview',this)">Overview</button>
+  <button class="mod-nav-btn" onclick="switchMod('m1',this)">M1 · Jul</button>
+  <button class="mod-nav-btn" onclick="switchMod('m2',this)">M2 · Oct</button>
+  <button class="mod-nav-btn" onclick="switchMod('m3',this)">M3 · Jan</button>
+  <button class="mod-nav-btn" onclick="switchMod('m4',this)">M4 · Mar</button>
+  <button class="mod-nav-btn" onclick="switchMod('m5',this)">M5 · Jun</button>
+  <button class="mod-nav-btn" onclick="switchMod('journal',this)">📓 Journal</button>
+</div>
+</div>
+</div>
+
+<div class="main">
+
+<!-- OVERVIEW -->
+<div id="panel-overview" class="mod-panel active">
+  <div class="overview-grid">
+    <div class="ov-card"><div class="ov-label">Module 1</div><div class="ov-val">Jul 12–24, 2026</div><div class="ov-sub">Company · London</div></div>
+    <div class="ov-card"><div class="ov-label">Module 2</div><div class="ov-val">Oct 5–16, 2026</div><div class="ov-sub">Product · London</div></div>
+    <div class="ov-card"><div class="ov-label">Module 3</div><div class="ov-val">Jan 11–15, 2027</div><div class="ov-sub">Start-Up · Silicon Valley</div></div>
+    <div class="ov-card"><div class="ov-label">Module 4</div><div class="ov-val">Mar 15–26, 2027</div><div class="ov-sub">Team · London</div></div>
+    <div class="ov-card"><div class="ov-label">Module 5</div><div class="ov-val">Jun 7–18, 2027</div><div class="ov-sub">World · London</div></div>
+  </div>
+  <div class="sticky">"Five modules. Three countries. A whole year of extraordinary design leadership. This planner has your back every step of the way. ✦ Start with Module 1 — that visa won't sort itself!"</div>
+  <div class="sec-label">Progress by Module</div>
+  <div id="overview-snapshot"></div>
+</div>
+
+<!-- MODULE 1 -->
+<div id="panel-m1" class="mod-panel">
+  <div class="mod-header-card">
+    <div>
+      <span class="mod-tag tag-london">London</span>
+      <div class="mod-title-big">Module 1 — Company</div>
+      <div class="mod-dates-big">July 12 – July 24, 2026 · 13 days</div>
+      <div class="mod-venue">📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE</div>
+      <div class="mod-venue" style="margin-top:4px">✈ SQ 306 · SIN 01:05 → LHR 08:10 · 11 Jul &nbsp;|&nbsp; SQ 313 · LGW 12:45 → SIN 09:05 · 26 Jul</div>
+      <div class="mod-venue" style="margin-top:4px">🍽 Welcome Dinner · The Union Club, Soho · Sun 12 Jul, 6–9pm</div>
+    </div>
+    <div class="mod-progress-wrap">
+      <div class="mod-progress-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="33"/><circle class="ring-fill" id="ring-m1" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/></svg><div class="ring-text" id="ring-m1-pct">0%</div></div>
+      <div class="mod-progress-label">Tasks Done</div>
+    </div>
+  </div>
+  <div class="inner-tabs">
+    <button class="inner-tab active" onclick="switchInner('m1','tasks',this)">☑ Tasks</button>
+    <button class="inner-tab" onclick="switchInner('m1','trips',this)">🗺 Side Trips</button>
+    <button class="inner-tab" onclick="switchInner('m1','budget',this)">💷 Budget</button>
+  </div>
+  <div id="m1-tasks" class="inner-panel active">
+    <div class="sec-label">Visa &amp; Documents</div><div id="tg-m1-visa"></div>
+    <div class="sec-label" style="margin-top:22px">Flights — Not Yet Booked</div><div id="tg-m1-flights"></div>
+    <div class="sec-label" style="margin-top:22px">Accommodation</div><div id="tg-m1-accom"></div>
+    <div class="sec-label" style="margin-top:22px">Money, Tech &amp; Essentials</div><div id="tg-m1-misc"></div>
+  </div>
+  <div id="m1-trips" class="inner-panel"><div id="trip-m1"></div></div>
+  <div id="m1-budget" class="inner-panel"><div id="budget-m1"></div></div>
+</div>
+
+<!-- MODULE 2 -->
+<div id="panel-m2" class="mod-panel">
+  <div class="mod-header-card">
+    <div>
+      <span class="mod-tag tag-london">London</span>
+      <div class="mod-title-big">Module 2 — Product</div>
+      <div class="mod-dates-big">October 5 – October 16, 2026 · 12 days</div>
+      <div class="mod-venue">📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE</div>
+      <div class="mod-venue" style="margin-top:4px">✈ Full travel window: Sep 21 (Barcelona) → Oct 18 (London check-out)</div>
+      <div class="mod-venue" style="margin-top:4px">🏨 BCN: Hotel Balmoral Sep 21–25 ✅ · Paris: Hôtel Bonne Nouvelle Oct 1–4 ✅ · London: Hostelle Oct 4–18 ✅</div>
+    </div>
+    <div class="mod-progress-wrap">
+      <div class="mod-progress-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="33"/><circle class="ring-fill" id="ring-m2" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/></svg><div class="ring-text" id="ring-m2-pct">0%</div></div>
+      <div class="mod-progress-label">Tasks Done</div>
+    </div>
+  </div>
+  <div class="inner-tabs">
+    <button class="inner-tab active" onclick="switchInner('m2','tasks',this)">☑ Tasks</button>
+    <button class="inner-tab" onclick="switchInner('m2','trips',this)">🗺 Side Trips · BCN + Paris</button>
+    <button class="inner-tab" onclick="switchInner('m2','budget',this)">💷 Budget</button>
+  </div>
+  <div id="m2-tasks" class="inner-panel active">
+    <div class="sec-label">Flights &amp; Transfers (SIN→BCN→Paris→London→SIN)</div><div id="tg-m2-flights"></div>
+    <div class="sec-label" style="margin-top:22px">Accommodation</div><div id="tg-m2-accom"></div>
+    <div class="sec-label" style="margin-top:22px">Prep &amp; Admin</div><div id="tg-m2-prep"></div>
+  </div>
+  <div id="m2-trips" class="inner-panel">
+    <div id="trip-m2"></div>
+  </div>
+  <div id="m2-budget" class="inner-panel">
+    <div id="budget-m2"></div>
+
+  </div>
+</div>
+
+<!-- MODULE 3 -->
+<div id="panel-m3" class="mod-panel">
+  <div class="mod-header-card">
+    <div>
+      <span class="mod-tag tag-sv">Silicon Valley</span>
+      <div class="mod-title-big">Module 3 — Start-Up</div>
+      <div class="mod-dates-big">January 11 – January 15, 2027 · 5 days</div>
+      <div class="mod-venue">🌉 Silicon Valley, USA</div>
+    </div>
+    <div class="mod-progress-wrap">
+      <div class="mod-progress-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="33"/><circle class="ring-fill" id="ring-m3" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/></svg><div class="ring-text" id="ring-m3-pct">0%</div></div>
+      <div class="mod-progress-label">Tasks Done</div>
+    </div>
+  </div>
+  <div class="inner-tabs">
+    <button class="inner-tab active" onclick="switchInner('m3','tasks',this)">☑ Tasks</button>
+    <button class="inner-tab" onclick="switchInner('m3','trips',this)">🗺 Side Trips</button>
+    <button class="inner-tab" onclick="switchInner('m3','budget',this)">💵 Budget</button>
+  </div>
+  <div id="m3-tasks" class="inner-panel active">
+    <div class="sec-label">Visa &amp; Documents (USA)</div><div id="tg-m3-visa"></div>
+    <div class="sec-label" style="margin-top:22px">Flights &amp; Travel</div><div id="tg-m3-flights"></div>
+    <div class="sec-label" style="margin-top:22px">Accommodation &amp; Prep</div><div id="tg-m3-prep"></div>
+  </div>
+  <div id="m3-trips" class="inner-panel"><div id="trip-m3"></div></div>
+  <div id="m3-budget" class="inner-panel"><div id="budget-m3"></div></div>
+</div>
+
+<!-- MODULE 4 -->
+<div id="panel-m4" class="mod-panel">
+  <div class="mod-header-card">
+    <div>
+      <span class="mod-tag tag-london">London</span>
+      <div class="mod-title-big">Module 4 — Team</div>
+      <div class="mod-dates-big">March 15 – March 26, 2027 · 12 days</div>
+      <div class="mod-venue">📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE</div>
+    </div>
+    <div class="mod-progress-wrap">
+      <div class="mod-progress-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="33"/><circle class="ring-fill" id="ring-m4" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/></svg><div class="ring-text" id="ring-m4-pct">0%</div></div>
+      <div class="mod-progress-label">Tasks Done</div>
+    </div>
+  </div>
+  <div class="inner-tabs">
+    <button class="inner-tab active" onclick="switchInner('m4','tasks',this)">☑ Tasks</button>
+    <button class="inner-tab" onclick="switchInner('m4','trips',this)">🗺 Side Trips</button>
+    <button class="inner-tab" onclick="switchInner('m4','budget',this)">💷 Budget</button>
+  </div>
+  <div id="m4-tasks" class="inner-panel active">
+    <div class="sec-label">Flights &amp; Travel</div><div id="tg-m4-flights"></div>
+    <div class="sec-label" style="margin-top:22px">Accommodation &amp; Prep</div><div id="tg-m4-prep"></div>
+  </div>
+  <div id="m4-trips" class="inner-panel"><div id="trip-m4"></div></div>
+  <div id="m4-budget" class="inner-panel"><div id="budget-m4"></div></div>
+</div>
+
+<!-- MODULE 5 -->
+<div id="panel-m5" class="mod-panel">
+  <div class="mod-header-card">
+    <div>
+      <span class="mod-tag tag-london">London</span>
+      <div class="mod-title-big">Module 5 — World</div>
+      <div class="mod-dates-big">June 7 – June 18, 2027 · 12 days</div>
+      <div class="mod-venue">📍 Design Leaders HQ, 30 Churchill Pl, Canary Wharf, E14 5RE</div>
+    </div>
+    <div class="mod-progress-wrap">
+      <div class="mod-progress-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="33"/><circle class="ring-fill" id="ring-m5" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/></svg><div class="ring-text" id="ring-m5-pct">0%</div></div>
+      <div class="mod-progress-label">Tasks Done</div>
+    </div>
+  </div>
+  <div class="inner-tabs">
+    <button class="inner-tab active" onclick="switchInner('m5','tasks',this)">☑ Tasks</button>
+    <button class="inner-tab" onclick="switchInner('m5','trips',this)">🗺 Side Trips</button>
+    <button class="inner-tab" onclick="switchInner('m5','budget',this)">💷 Budget</button>
+  </div>
+  <div id="m5-tasks" class="inner-panel active">
+    <div class="sec-label">Flights &amp; Travel</div><div id="tg-m5-flights"></div>
+    <div class="sec-label" style="margin-top:22px">Accommodation &amp; Prep</div><div id="tg-m5-prep"></div>
+  </div>
+  <div id="m5-trips" class="inner-panel"><div id="trip-m5"></div></div>
+  <div id="m5-budget" class="inner-panel"><div id="budget-m5"></div></div>
+</div>
+
+<!-- JOURNAL -->
+<div id="panel-journal" class="mod-panel">
+  <div class="journal-new">
+    <div class="journal-label" id="journalDate">Today</div>
+    <textarea class="journal-textarea" id="journalInput" placeholder="Write your thoughts… What are you most excited about? What's still on your mind?"></textarea>
+    <button class="journal-save-btn" onclick="saveJournalEntry()">Save Entry →</button>
+  </div>
+  <div class="sec-label" style="margin-top:4px">Past Entries</div>
+  <div id="journalEntries"><p style="color:var(--mid);font-style:italic;font-size:0.83rem">No entries yet. Your first entry awaits ✦</p></div>
+</div>
+
+</div><!-- /main -->
+<div class="toast" id="toast">✦ Saved</div>
+
+<script>
+// ─── DATA DEFINITIONS ─────────────────────────────────────────
+const TASKS = {
+  'm1-visa': [
+    { id:'m1v1', text:'Apply for UK Standard Visitor Visa', hint:'Singapore passport — apply at least 3 months before. Start April 2026 at the latest.', badge:'b-urgent' },
+    { id:'m1v2', text:'Gather visa supporting documents', hint:'Programme acceptance letter, 3-month bank statements, employment letter, accommodation proof', badge:'b-urgent' },
+    { id:'m1v3', text:'Check passport validity (must cover 6+ months beyond departure)', hint:'Passport must be valid until at least Jan 2027', badge:'b-urgent' },
+    { id:'m1v4', text:'Book VFS Global biometrics appointment (Singapore)', hint:'Slots fill up fast — book as soon as you have your documents ready', badge:'b-urgent' },
+    { id:'m1v5', text:'Request programme invitation letter from coordinator', hint:'Required for visa application — ask your programme office', badge:'b-soon' },
+    { id:'m1v6', text:'Purchase travel insurance (Jul 10 – Jul 27)', hint:'Medical, cancellation, baggage. Many UK visas require proof of insurance.', badge:'b-soon' },
+  ],
+  'm1-flights': [
+    { id:'m1f1', text:'SQ 306 · SIN 01:05 → LHR 08:10 · 11 Jul (Sat)', hint:'Singapore Airlines · A350-900 · Economy (N) · Changi T3 → Heathrow T2 · Non-stop 14h 5min · SGD 2,044.10 (return) — NOT YET PURCHASED', badge:'b-urgent' },
+    { id:'m1f2', text:'SQ 313 · LGW 12:45 → SIN 09:05 · 26 Jul (Sun)', hint:'Singapore Airlines · A350-900 · Economy (W) · Gatwick Terminal N → Changi T3 · Non-stop 13h 20min · Arrives Mon 27 Jul — NOT YET PURCHASED', badge:'b-urgent' },
+    { id:'m1f3', text:'Plan LHR → Hostelle transfer (Jul 11, arrive 08:10)', hint:'Elizabeth Line: Heathrow T2 → Canary Wharf ~45 min, ~£12. Arrive 08:10 — leave bags at hostel, check in at 14:00. Welcome Dinner at 6pm same day!', badge:'b-soon' },
+    { id:'m1f4', text:'⚠️ Book 1 night accommodation after Hostelle checkout (Jul 25)', hint:'Hostelle checks out Jul 25 at 11:00. Flight not until Jul 26 at 12:45. Need 1 night near Victoria for easy Gatwick Express access next morning.', badge:'b-gap' },
+    { id:'m1f5', text:'Plan Jul 25 night → LGW transfer (Jul 26, departs 12:45)', hint:'Gatwick Express from London Victoria ~30 min, ~£20. Leave accommodation by 10:30am at the latest.', badge:'b-soon' },
+    { id:'m1f6', text:'Set calendar reminder: online check-in opens 48h before (Jul 9 + Jul 24)', hint:'SQ online check-in opens 48h before departure', badge:'' },
+  ],
+  'm1-accom': [
+    { id:'m1a1', text:'Hostelle women-only hostel — confirmed on Agoda ✅', hint:'Check-in: Sat 11 Jul 14:00 · Check-out: Sat 25 Jul 11:00 · 1 room', badge:'b-done' },
+    { id:'m1a2', text:'⚠️ Sort accommodation for arrival night (Jul 10)', hint:'Hostel opens Jul 11 at 14:00. Book 1 night near Heathrow or central London — or ask hostel about early check-in.', badge:'b-gap' },
+    { id:'m1a3', text:'Confirm hostel address & share with emergency contact back home', hint:'', badge:'' },
+    { id:'m1a4', text:'Pack a small padlock for the hostel locker', hint:'Standard practice in women\'s hostels. Usually a 3–4cm padlock.', badge:'' },
+  ],
+  'm1-misc': [
+    { id:'m1m0a', text:'⚠️ Contact programme team — Welcome Dinner form deadline passed', hint:'Form was due May 31 at 5pm BST. Email the Future London Academy team ASAP to confirm you can still submit and personalise your experience.', badge:'b-urgent' },
+    { id:'m1m0b', text:'Welcome Dinner — The Union Club, 50 Greek Street, Soho, W1D 4EQ', hint:'Sun Jul 12 · 6:00–9:00pm · Arrive between 6:00–6:15pm · Smart dress · First chance to meet fellow delegates and the Future London Academy team', badge:'b-info' },
+    { id:'m1m1', text:'Notify your bank of UK travel dates (Jul 11–26)', hint:'Prevents card being blocked while abroad', badge:'' },
+    { id:'m1m2', text:'Set up Wise or Revolut — load ~SGD 1,400 (~£800)', hint:'Much better exchange rate than banks. Load before departing.', badge:'b-soon' },
+    { id:'m1m3', text:'Buy UK Type G plug adapter (3-pin square plug)', hint:'🔌 Singapore uses a different plug! Buy one before leaving. ~SGD 8–15.', badge:'b-urgent' },
+    { id:'m1m4', text:'Get UK eSIM or international roaming plan', hint:'Airalo UK eSIM is ~SGD 14 for 5GB. Activate the day before departure.', badge:'b-soon' },
+    { id:'m1m5', text:'Download CityMapper + save London offline on Google Maps', hint:'CityMapper is far better than Google Maps for London tube navigation', badge:'' },
+    { id:'m1m6', text:'Set out-of-office at work for Jul 12–24', hint:'', badge:'' },
+    { id:'m1m7', text:'Get ~£80–100 GBP cash for tips, markets, small shops', hint:'Most places in London accept card, but handy to have some cash', badge:'' },
+  ],
+  'm2-flights': [
+    { id:'m2f1', text:'Book outbound: SIN → BCN (aim for ~Sep 20)', hint:'Flying into Barcelona first for the side trip Sep 21–25. Check Scoot, SQ, or one-stop options.', badge:'b-urgent' },
+    { id:'m2f2', text:'Book BCN → Paris (Sep 25)', hint:'Short hop — Vueling, easyJet, or Air France. ~1h 45m. Gets you to Paris in time for Oct 1 hotel check-in.', badge:'b-urgent' },
+    { id:'m2f3', text:'Book return: LHR or LGW → SIN (~Oct 18–19)', hint:'Leave a day or two buffer after Oct 16 module end. Hostelle checks out Oct 18.', badge:'b-soon' },
+    { id:'m2f4', text:'Plan CDG/Orly → Hôtel Bonne Nouvelle transfer (Oct 1)', hint:'Hotel is in the 2nd arrondissement. RER B from CDG → Châtelet ~35 min, ~€12. Or taxi ~€55.', badge:'b-soon' },
+    { id:'m2f5', text:'Plan Paris → London transfer (Oct 4, check-out day)', hint:'Eurostar Paris Gare du Nord → London St Pancras ~2h 15m. Book ahead for best prices ~£60–80.', badge:'b-soon' },
+    { id:'m2f6', text:'Plan London arrival → Hostelle transfer (Oct 4)', hint:'St Pancras → Hostelle by Tube or Uber. Hostelle check-in from Oct 4.', badge:'' },
+    { id:'m2f7', text:'Set calendar reminder: online check-in 48h before each flight', hint:'', badge:'' },
+  ],
+  'm2-accom': [
+    { id:'m2a1', text:'Hotel Balmoral, Barcelona — confirmed ✅', hint:'Sep 21–25 · 4 nights · Via Augusta 5, Barcelona 08006 · Check-in 14:00, Check-out 12:00 · ~SGD 1,030 (USD 771.06)', badge:'b-done' },
+    { id:'m2a2', text:'Hôtel Bonne Nouvelle, Paris — confirmed ✅', hint:'Oct 1–4 · Paris · Free cancellation · 2nd arrondissement, near grands boulevards', badge:'b-done' },
+    { id:'m2a3', text:'Hostelle women-only hostel, London — confirmed ✅', hint:'Oct 4–18 · London · Free cancellation · Same hostel as Module 1!', badge:'b-done' },
+    { id:'m2a4', text:'⚠️ Gap: Sep 25–Oct 1 — where are you between Barcelona and Paris?', hint:'6 nights unaccounted for. Options: stay in Barcelona longer, add a stop (Marseille? Valencia?), or head to Paris early.', badge:'b-gap' },
+    { id:'m2a5', text:'Share all booking confirmations with emergency contact', hint:'', badge:'' },
+  ],
+  'm2-prep': [
+    { id:'m2p1', text:'Check UK + Schengen visa validity covers Sep–Oct 2026', hint:'Barcelona & Paris are in the Schengen Area. Singapore passport = visa-free for 90 days within any 180-day period.', badge:'b-info' },
+    { id:'m2p2', text:'Purchase travel insurance covering Spain, France & UK (Sep 21–Oct 18)', hint:'Multi-country cover — make sure Spain and France are included alongside UK', badge:'b-soon' },
+    { id:'m2p3', text:'Notify bank of travel to Spain, France & UK (Sep–Oct 2026)', hint:'Three countries — let your bank know the full itinerary', badge:'' },
+    { id:'m2p4', text:'Get EUR cash (~€200) for Barcelona and Paris', hint:'Cards accepted widely but useful for markets, cafes, tips', badge:'' },
+    { id:'m2p5', text:'Set OOO at work for Oct 5–16', hint:'', badge:'' },
+    { id:'m2p6', text:'Review Module 1 learnings before arriving — prep for Product theme', hint:'', badge:'' },
+    { id:'m2p7', text:'Download Google Maps offline for Barcelona, Paris, and London', hint:'', badge:'' },
+  ],
+  'm3-visa': [
+    { id:'m3v1', text:'Apply for US ESTA (Electronic Travel Authorization)', hint:'Singapore passport holders apply online at esta.cbp.dhs.gov. ~USD 21. Valid 2 years. Apply months ahead.', badge:'b-urgent' },
+    { id:'m3v2', text:'Check existing ESTA validity if you already have one', hint:'ESTA valid for 2 years from approval date', badge:'b-info' },
+    { id:'m3v3', text:'Purchase US travel insurance (Jan 2027)', hint:'US healthcare is extremely expensive without insurance. Good medical coverage is non-negotiable.', badge:'b-urgent' },
+  ],
+  'm3-flights': [
+    { id:'m3f1', text:'Book outbound: SIN → SFO (~Jan 9–10, 2027)', hint:'Fly into San Francisco — Silicon Valley is ~1h south by Caltrain or car', badge:'b-soon' },
+    { id:'m3f2', text:'Book return: SFO or SJC → SIN (~Jan 15–16, 2027)', hint:'SJC (San Jose) is closer to SV if price is similar', badge:'b-soon' },
+    { id:'m3f3', text:'Book transfers: airport ↔ accommodation', hint:'Uber/Lyft is standard. Bay Area public transit to SV is poor — budget for ride shares.', badge:'' },
+  ],
+  'm3-prep': [
+    { id:'m3p1', text:'Book accommodation near programme venue (confirm location with coordinator)', hint:'Programme location in Silicon Valley TBC — confirm address first, then book nearby', badge:'b-urgent' },
+    { id:'m3p2', text:'Set OOO at work for Jan 11–15', hint:'', badge:'' },
+    { id:'m3p3', text:'Get USD cash or load USD on Wise/Revolut (~USD 300)', hint:'Card accepted most places but good to have some cash for markets and tips', badge:'' },
+    { id:'m3p4', text:'Notify bank of USA travel dates', hint:'', badge:'' },
+    { id:'m3p5', text:'Check device voltage: Singapore 230V vs US 110V', hint:'Most modern laptops/phones are dual voltage (100–240V) — check the label. Adapters needed for plugs.', badge:'b-info' },
+  ],
+  'm4-flights': [
+    { id:'m4f1', text:'Book outbound: SIN → LHR (~Mar 13–14, 2027)', hint:'', badge:'b-soon' },
+    { id:'m4f2', text:'Book return: LHR → SIN (~Mar 27–28, 2027)', hint:'', badge:'b-soon' },
+    { id:'m4f3', text:'Plan airport transfers both ways', hint:'', badge:'' },
+  ],
+  'm4-prep': [
+    { id:'m4p1', text:'Book accommodation: ~Mar 13 → Mar 27, London', hint:'Spring in London — slightly central helps for Copenhagen/Amsterdam side trips via Eurostar/flight', badge:'b-soon' },
+    { id:'m4p2', text:'Check UK visa validity for March 2027', hint:'Apply for fresh Visitor Visa ~3 months before (December 2026)', badge:'b-info' },
+    { id:'m4p3', text:'Purchase travel insurance for Module 4', hint:'', badge:'' },
+    { id:'m4p4', text:'Set OOO at work for Mar 15–26', hint:'', badge:'' },
+    { id:'m4p5', text:'Pack for cold weather — London in March: 4–12°C', hint:'Wool coat, scarves, layers. Very different from July!', badge:'b-info' },
+  ],
+  'm5-flights': [
+    { id:'m5f1', text:'Book outbound: SIN → LHR (~Jun 5–6, 2027)', hint:'Module ends Jun 18 — consider extending for a Europe trip!', badge:'b-soon' },
+    { id:'m5f2', text:'Book return: flexible end date (Jun 20 onwards?)', hint:'This is the FINAL module — celebrate with a Switzerland or Germany trip after?', badge:'b-soon' },
+    { id:'m5f3', text:'Plan airport transfers', hint:'', badge:'' },
+  ],
+  'm5-prep': [
+    { id:'m5p1', text:'Book accommodation: ~Jun 5 → Jun 18+, London', hint:'', badge:'b-soon' },
+    { id:'m5p2', text:'Check UK visa validity for June 2027', hint:'Apply fresh ~3 months before (March 2027)', badge:'b-info' },
+    { id:'m5p3', text:'Purchase travel insurance for Module 5 (+ any post-programme travel)', hint:'Extend cover if you\'re doing Switzerland/Germany after', badge:'' },
+    { id:'m5p4', text:'Set OOO at work for Jun 7–18', hint:'', badge:'' },
+    { id:'m5p5', text:'Plan post-programme Europe celebration 🎉', hint:'Switzerland + Germany are already on your list — why not do both?', badge:'b-idea' },
+  ],
+};
+
+const TRIPS = {
+  m1: [
+    { icon:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', name:'Edinburgh, Scotland', desc:'Castles, cobblestones, Arthur\'s Seat, and the best whisky bars. ~4.5h by train from King\'s Cross. Perfect long weekend escape (Jul 19–20).', meta:'ScotRail train: ~£30–60 advance · Budget B&B or hostel · Weekend trip', chips:['Research ScotRail trains','Book train ticket','Book accommodation','Edinburgh Castle','Arthur\'s Seat hike','Royal Mile walk','Whisky tasting?'] },
+    { icon:'🌷', name:'Amsterdam, Netherlands', desc:'Design mecca — FOAM Photography Museum, Rijksmuseum, canal bikes, stroopwafels. 1h 15m by Eurostar from London (new direct service from Nov 2025!)', meta:'Eurostar: ~£50–120 return · Budget airline option too · Weekend trip', chips:['Check Eurostar availability','Book Eurostar or flight','Book hotel/hostel','FOAM Photography Museum','Rijksmuseum','Canal boat tour','Jordaan neighbourhood'] },
+    { icon:'🎨', name:'London Design Must-Dos', desc:'Design Museum, Tate Modern, Columbia Road Flower Market (Sundays!), Borough Market, Shoreditch street art, Victoria & Albert Museum.', meta:'Most galleries free · Columbia Rd = Sunday mornings only · Borough Market = Thu–Sat', chips:['Design Museum','Tate Modern (free)','Columbia Rd Flower Market (Sun)','V&A Museum (free)','Borough Market (food!)','Shoreditch mural walk'] },
+  ],
+  m2: [
+    { icon:'🇪🇸', name:'Barcelona, Spain · Sep 21–25', desc:'Confirmed trip! 4 nights in Barcelona before the module begins. Gaudí architecture, La Boqueria market, Gothic Quarter tapas crawl, and the city\'s incredible design scene. Sagrada Família is unmissable — book tickets well in advance.', meta:'Sep 21–25 · 4 nights · Flight from SIN needed · Arrive before Sep 21', chips:['Book SIN→BCN flights','Book Barcelona accommodation','Sagrada Família tickets (book NOW — sells out weeks ahead!)','Park Güell timed entry (book ahead)','La Boqueria market','Gothic Quarter walk','Tapas bar crawl in El Born','Picasso Museum'] },
+    { icon:'🇫🇷', name:'Paris, France · Oct 1–4', desc:'Hôtel Bonne Nouvelle confirmed! 3 nights in the 2nd arrondissement — walking distance from Centre Pompidou, Le Marais boutiques, and the grands boulevards. Then Eurostar to London Oct 4 for module start.', meta:'Oct 1–4 · Hôtel Bonne Nouvelle · Free cancellation · 2nd arr.', chips:['Book BCN→CDG flight (Sep 25)','Book Eurostar Paris→London (Oct 4)','Centre Pompidou (book ahead)','Louvre (book timed entry)','Musée d\'Orsay','Le Marais design boutiques','Seine riverbank evening walk','Montmartre & Sacré-Cœur'] },
+    { icon:'⚠️', name:'Gap: Sep 25 – Oct 1 (6 nights)', desc:'Barcelona ends Sep 25, Paris hotel starts Oct 1. You have 6 unplanned nights. Options: extend Barcelona stay, add a stop in the south of France (Marseille, Nice, Montpellier?), or head to Paris early and explore more.', meta:'6 nights to fill · Plan before booking BCN→CDG flight', chips:['Decide: stay in Barcelona or add a stop?','Marseille day trip option?','Nice / Côte d\'Azur?','Head to Paris early?','Book accommodation for this gap'] },
+  ],
+  m3: [
+    { icon:'🏕', name:'Yosemite National Park', desc:'Half Dome, Yosemite Valley, sequoia groves, waterfalls. ~3.5h drive from Silicon Valley. January is off-peak — snowy, quiet, and utterly magical.', meta:'Rent a car from SFO/SJC · Book lodge/cabin well ahead · Buy America the Beautiful National Park Pass', chips:['Book rental car (SFO/SJC)','Book Yosemite Valley Lodge / cabin','Check road conditions (Jan = snow chains!)','Yosemite Valley scenic drive','Mirror Lake snowshoe walk','Big Trees Loop','Valley View lookout'] },
+    { icon:'🗽', name:'New York City', desc:'MoMA, the High Line, Brooklyn Museum, Brooklyn Flea, world\'s best bagels, Chelsea galleries. Add 3–4 days before or after Silicon Valley.', meta:'JetBlue/Delta SFO→JFK: ~USD 100–200 · Budget hotel or Airbnb · 5–6h flight', chips:['Book SFO→JFK flight','Book hotel/Airbnb NYC','MoMA tickets (book ahead)','The High Line walk','Brooklyn Flea Market (weekend)','Brooklyn Museum','Chelsea gallery district'] },
+    { icon:'🌉', name:'San Francisco Day Trip', desc:'Golden Gate Bridge, Mission District murals, Ferry Building Marketplace, SFMOMA, Haight-Ashbury. 30–45 min from SV by Caltrain.', meta:'Caltrain SV → SF: ~USD 10 return · Easy day trip from Silicon Valley', chips:['Caltrain to SF','Golden Gate walk or bike','SFMOMA','Mission District murals','Ferry Building market','Fisherman\'s Wharf (touristy but fun!)'] },
+  ],
+  m4: [
+    { icon:'🇩🇰', name:'Copenhagen, Denmark', desc:'Scandinavian design capital — Louisiana Museum of Modern Art, Nyhavn, the city\'s incredible cycling culture, Noma neighbourhood. 2h flight from London.', meta:'Flight: ~£60–110 return · Mid-March shoulder season — fewer crowds, crisper air', chips:['Book flights LHR→CPH','Book hotel in Copenhagen','Louisiana Museum of Modern Art','Nyhavn harbour stroll','Rent a bike (city is very cycle-friendly)','Design Museum Danmark','Torvehallerne food market'] },
+    { icon:'🌷', name:'Amsterdam (Again!) — Tulip Season', desc:'Keukenhof Gardens — the world\'s most famous tulip display — opens late March to mid-May. Jaw-dropping. Also: IDEO Amsterdam, Van Gogh Museum.', meta:'Eurostar or flight: ~£50–100 · Keukenhof tulips: late March onwards — book tickets ahead!', chips:['Eurostar or flight','Book hotel','Keukenhof Tulip Garden (MUST book tickets!)', 'Van Gogh Museum','Anne Frank House (book 2+ weeks ahead!)','Jordaan neighbourhood','Cheese market (Alkmaar is nearby)'] },
+  ],
+  m5: [
+    { icon:'🇨🇭', name:'Switzerland — Geneva or Zurich', desc:'Lake Geneva, the Jet d\'Eau, Swiss design heritage, incredible watch and art museums, Alpine backdrops. Stunning in June. 1.5h flight from London.', meta:'Flight: ~£80–130 return · June = warm, green, perfect for lakeside walks', chips:['Decide: Geneva or Zurich?','Book flights LHR→GVA or ZRH','Book hotel','Geneva lakefront promenade','Musée Rath or Kunsthaus (Zurich)','Day trip to the Alps (Grindelwald?)','Swiss chocolate + cheese 🧀'] },
+    { icon:'🇩🇪', name:'Berlin, Germany', desc:'East Side Gallery, Bauhaus-Archiv, Kreuzberg design scene, Museum Island, world-class nightlife and street art. Direct flight from London ~2h.', meta:'Flight: ~£50–100 return · Post-programme weekend Jun 19–20 perfect', chips:['Book flights LHR→BER','Book hotel (Mitte or Prenzlauer Berg)','Bauhaus-Archiv / Museum für Gestaltung','East Side Gallery (Berlin Wall)','Museum Island','Kreuzberg design & food walk','Mauerpark flea market (Sunday)'] },
+  ],
+};
+
+// ─── SUPABASE CONFIG ─────────────────────────────────────────
+const SUPA_URL = 'https://dujaaudwjyjwqthfccpg.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1amFhdWR3anlqd3F0aGZjY3BnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MjEzNzMsImV4cCI6MjA5MzE5NzM3M30.zWYJ2ZMWuxddLr0eU_ExQAagTbel7WgahWpO2BD92N0'; // ← paste your anon key here
+const SUPA_ROW = 'intransit_v1'; // unique key for your data row
+
+// ─── STATE ───────────────────────────────────────────────────
+let S = {};
+let _saveTimer = null;
+
+// Load from localStorage immediately (instant UI)
+// then sync from Supabase in background
+function initState() {
+  try { S = JSON.parse(localStorage.getItem('ldp26') || '{}'); } catch(e) { S = {}; }
+  // Background sync from Supabase
+  supaLoad();
+}
+
+async function supaLoad() {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/planner_data?key=eq.${SUPA_ROW}&select=value`, {
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': `Bearer ${SUPA_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (rows && rows.length > 0 && rows[0].value) {
+      const remote = JSON.parse(rows[0].value);
+      // Merge remote into local — remote wins on conflict
+      S = { ...S, ...remote };
+      localStorage.setItem('ldp26', JSON.stringify(S));
+      // Re-render everything with synced data
+      reRenderAll();
+      showToast('Synced ✓');
+    }
+  } catch(e) {
+    console.log('Supabase load failed, using local data', e);
+  }
+}
+
+async function supaSave() {
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/planner_data`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': `Bearer ${SUPA_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ key: SUPA_ROW, value: JSON.stringify(S) })
+    });
+  } catch(e) {
+    console.log('Supabase save failed, data saved locally', e);
+  }
+}
+
+function getS() { return S; }
+
+function setS(s) {
+  S = s;
+  // Always save locally first (instant)
+  try { localStorage.setItem('ldp26', JSON.stringify(S)); } catch(e) {}
+  // Debounce cloud save — waits 800ms after last change
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => supaSave(), 800);
+}
+
+function reRenderAll() {
+  Object.entries(TASKS).forEach(([key, _]) => renderTasks('tg-' + key, null));
+  Object.entries(TRIPS).forEach(([mod, trips]) => renderTrips('trip-' + mod, trips, mod));
+  ['m1','m2','m3','m4','m5'].forEach(mod => renderBudget('budget-' + mod, mod));
+  updateAllProgress();
+  loadJournal();
+}
+
+// ─── TOAST ───────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = '✦ ' + (msg || 'Saved');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1700);
+}
+
+// ─── NAV ─────────────────────────────────────────────────────
+function switchMod(id, btn) {
+  document.querySelectorAll('.mod-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.mod-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+function switchInner(mod, tab, btn) {
+  const wrap = document.getElementById('panel-' + mod);
+  wrap.querySelectorAll('.inner-panel').forEach(p => p.classList.remove('active'));
+  wrap.querySelectorAll('.inner-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(mod + '-' + tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── TASKS ───────────────────────────────────────────────────
+const BADGE_LABELS = { 'b-urgent':'URGENT','b-soon':'SOON','b-done':'CONFIRMED','b-gap':'GAP!','b-info':'NOTE','b-idea':'IDEA' };
+
+function renderTasks(containerId, _unused) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const groupKey = containerId.replace('tg-','');
+  const base = (TASKS[groupKey] || []).filter(t => !S['te_' + t.id + '_deleted']);
+  const custom = S['ctasks_' + groupKey] || [];
+  const all = [...base, ...custom];
+
+  const taskHtml = all.map((t, i) => {
+    const isCustom = i >= base.length;
+    const done = !!S['t_' + t.id];
+    const note = S['n_' + t.id] || '';
+    const displayText  = S['te_' + t.id + '_text']  !== undefined ? S['te_' + t.id + '_text']  : t.text;
+    const displayHint  = S['te_' + t.id + '_hint']  !== undefined ? S['te_' + t.id + '_hint']  : (t.hint || '');
+    const displayBadge = S['te_' + t.id + '_badge'] !== undefined ? S['te_' + t.id + '_badge'] : (t.badge || '');
+    const safeText  = displayText.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    const safeHint  = displayHint.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+    return `<div class="task-item${done?' done':''}" id="ti-${t.id}">
+      <div class="task-row" onclick="toggleTask('${t.id}')">
+        <div class="chk"><span class="chk-tick">✓</span></div>
+        <div class="task-body">
+          <div class="task-text">${displayText}</div>
+          ${displayHint ? `<div class="task-hint">${displayHint}</div>` : ''}
+          ${displayBadge ? `<div style="margin-top:5px"><span class="badge ${displayBadge}">${BADGE_LABELS[displayBadge]||''}</span></div>` : ''}
+        </div>
+        <div class="task-actions" onclick="event.stopPropagation()">
+          <button class="task-icon-btn${note?' has-note':''}" id="nb-${t.id}" title="${note?'Edit note':'Add note'}" onclick="toggleNote('${t.id}')">📝</button>
+          <button class="task-icon-btn" title="Edit" onclick="toggleTaskEdit('${t.id}')">✏️</button>
+          <button class="task-icon-btn del" title="Delete" onclick="deleteTask('${t.id}','${groupKey}',${isCustom})">✕</button>
+        </div>
+      </div>
+      <div class="task-edit-area" id="tea-${t.id}">
+        <div class="edit-row"><div class="edit-label">Task</div><input class="edit-input" id="ei-text-${t.id}" value="${safeText}" placeholder="Task description"></div>
+        <div class="edit-row"><div class="edit-label">Hint</div><input class="edit-input" id="ei-hint-${t.id}" value="${safeHint}" placeholder="Optional detail"></div>
+        <div class="edit-row"><div class="edit-label">Badge</div>
+          <select class="badge-select" id="ei-badge-${t.id}">
+            <option value="">No badge</option>
+            <option value="b-urgent"${displayBadge==='b-urgent'?' selected':''}>URGENT</option>
+            <option value="b-soon"${displayBadge==='b-soon'?' selected':''}>SOON</option>
+            <option value="b-done"${displayBadge==='b-done'?' selected':''}>CONFIRMED</option>
+            <option value="b-gap"${displayBadge==='b-gap'?' selected':''}>GAP!</option>
+            <option value="b-info"${displayBadge==='b-info'?' selected':''}>NOTE</option>
+            <option value="b-idea"${displayBadge==='b-idea'?' selected':''}>IDEA</option>
+          </select>
+        </div>
+        <button class="edit-save-btn" onclick="saveTaskEdit('${t.id}','${groupKey}')">Save changes</button>
+      </div>
+      <div class="note-area" id="na-${t.id}">
+        <textarea class="note-textarea" id="nt-${t.id}" placeholder="Your note…">${note}</textarea>
+        <div style="display:flex;align-items:center;gap:0">
+          <button class="note-save-btn" onclick="saveNote('${t.id}')">Save note</button>
+          <span class="note-saved-flash" id="nsf-${t.id}">Saved ✓</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // inline add-task form (toggleable)
+  const addForm = `
+    <div id="atf-${groupKey}" style="display:none;background:var(--warm);border:1px solid var(--border);border-radius:9px;padding:14px;margin-top:8px">
+      <div class="edit-row"><div class="edit-label">Task</div><input class="edit-input" id="new-text-${groupKey}" placeholder="What needs to be done?"></div>
+      <div class="edit-row"><div class="edit-label">Hint</div><input class="edit-input" id="new-hint-${groupKey}" placeholder="Optional detail or hint"></div>
+      <div class="edit-row"><div class="edit-label">Badge</div>
+        <select class="badge-select" id="new-badge-${groupKey}">
+          <option value="">No badge</option>
+          <option value="b-urgent">URGENT</option>
+          <option value="b-soon">SOON</option>
+          <option value="b-done">CONFIRMED</option>
+          <option value="b-gap">GAP!</option>
+          <option value="b-info">NOTE</option>
+          <option value="b-idea">IDEA</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="edit-save-btn" onclick="confirmAddTask('${groupKey}')">Add task</button>
+        <button class="edit-save-btn" style="background:var(--light);color:var(--ink)" onclick="document.getElementById('atf-${groupKey}').style.display='none'">Cancel</button>
+      </div>
+    </div>
+    <button class="add-task-btn" onclick="(function(f){f.style.display=f.style.display==='none'?'block':'none'})(document.getElementById('atf-${groupKey}'))">+ Add task</button>`;
+
+  el.innerHTML = taskHtml + addForm;
+}
+
+function toggleTaskEdit(id) {
+  document.getElementById('tea-' + id)?.classList.toggle('open');
+}
+
+function saveTaskEdit(id, groupKey) {
+  S['te_' + id + '_text']  = document.getElementById('ei-text-' + id)?.value || '';
+  S['te_' + id + '_hint']  = document.getElementById('ei-hint-' + id)?.value || '';
+  S['te_' + id + '_badge'] = document.getElementById('ei-badge-' + id)?.value || '';
+  setS(S);
+  renderTasks('tg-' + groupKey, null);
+  showToast('Task saved ✓');
+}
+
+function deleteTask(id, groupKey, isCustom) {
+  // show inline confirm instead of browser confirm()
+  const item = document.getElementById('ti-' + id);
+  if (!item) return;
+  // if already showing confirm, just do it
+  if (item.dataset.confirmDelete === '1') {
+    if (isCustom) {
+      S['ctasks_' + groupKey] = (S['ctasks_' + groupKey] || []).filter(t => t.id !== id);
+    } else {
+      S['te_' + id + '_deleted'] = true;
+    }
+    delete S['t_' + id]; delete S['n_' + id];
+    setS(S);
+    renderTasks('tg-' + groupKey, null);
+    updateAllProgress();
+    showToast('Task deleted');
+    return;
+  }
+  // first click — show confirm state on the button
+  item.dataset.confirmDelete = '1';
+  const btn = item.querySelector('.task-icon-btn.del');
+  if (btn) {
+    btn.textContent = '?';
+    btn.style.background = 'var(--terracotta)';
+    btn.style.color = '#fff';
+    btn.style.borderColor = 'var(--terracotta)';
+    btn.title = 'Click again to confirm delete';
+  }
+  // auto-reset after 3s
+  setTimeout(() => {
+    if (item.dataset.confirmDelete) {
+      item.dataset.confirmDelete = '';
+      if (btn) { btn.textContent = '✕'; btn.style.background=''; btn.style.color=''; btn.style.borderColor=''; btn.title='Delete'; }
+    }
+  }, 3000);
+}
+
+function confirmAddTask(groupKey) {
+  const textEl = document.getElementById('new-text-' + groupKey);
+  const text = textEl?.value.trim();
+  if (!text) { showToast('Enter a task description first'); return; }
+  const hint  = document.getElementById('new-hint-' + groupKey)?.value.trim() || '';
+  const badge = document.getElementById('new-badge-' + groupKey)?.value || '';
+  const id = 'ct_' + groupKey + '_' + Date.now();
+  if (!S['ctasks_' + groupKey]) S['ctasks_' + groupKey] = [];
+  S['ctasks_' + groupKey].push({ id, text, hint, badge });
+  setS(S);
+  renderTasks('tg-' + groupKey, null);
+  updateAllProgress();
+  showToast('Task added ✓');
+}
+
+function toggleTask(id) {
+  S['t_' + id] = !S['t_' + id];
+  setS(S);
+  const el = document.getElementById('ti-' + id);
+  if (el) el.classList.toggle('done', !!S['t_' + id]);
+  updateAllProgress();
+  showToast();
+}
+
+function toggleNote(id) {
+  const area = document.getElementById('na-' + id);
+  const open = area.classList.toggle('open');
+  if (open) document.getElementById('nt-' + id)?.focus();
+}
+
+function saveNote(id) {
+  const txt = document.getElementById('nt-' + id)?.value || '';
+  S['n_' + id] = txt;
+  setS(S);
+  const btn = document.getElementById('nb-' + id);
+  if (btn) btn.classList.toggle('has-note', !!txt);
+  const flash = document.getElementById('nsf-' + id);
+  if (flash) { flash.classList.add('show'); setTimeout(() => flash.classList.remove('show'), 1600); }
+  showToast('Note saved ✓');
+}
+
+// ─── TRIPS ───────────────────────────────────────────────────
+const _tripStore = {}; // runtime store so we don't pass trips through onclick attrs
+
+function renderTrips(containerId, trips, modKey) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  _tripStore[modKey] = trips; // store reference
+
+  // merge with custom trips
+  const customTrips = S['ctrips_' + modKey] || [];
+  const allTrips = [...trips, ...customTrips];
+
+  el.innerHTML = allTrips.map((trip, ti) => {
+    const isCustom = ti >= trips.length;
+    const tk = `trip_${modKey}_${ti}`;
+    const name  = S[tk+'_name'] ?? trip.name;
+    const desc  = S[tk+'_desc'] ?? trip.desc;
+    const meta  = S[tk+'_meta'] ?? trip.meta;
+    const icon  = S[tk+'_icon'] ?? trip.icon ?? '📍';
+    const savedChips = S[tk+'_chips'] ?? trip.chips ?? [];
+
+    const chips = savedChips.map((c, ci) => {
+      const k = `ch_${modKey}_${ti}_${ci}`;
+      return `<span class="trip-chip${S[k] ? ' checked' : ''}" onclick="toggleChip('${k}',this)">${c}</span>`;
+    }).join('');
+
+    const chipEditItems = savedChips.map((c, ci) =>
+      `<div class="chip-edit"><span>${c}</span><button class="chip-del" onclick="deleteChip('${modKey}',${ti})">✕</button></div>`
+    ).join('');
+
+    return `<div class="trip-card" id="tripcard-${tk}" style="flex-direction:column;padding:0;overflow:hidden">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:18px 20px">
+        <div class="trip-icon" style="font-size:1.4rem;flex-shrink:0;margin-top:2px">${icon}</div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+            <div class="trip-name">${name}</div>
+            <div style="display:flex;gap:4px;flex-shrink:0">
+              ${isCustom ? `<button class="task-icon-btn del" title="Remove trip" onclick="deleteTrip('${modKey}',${ti})">✕</button>` : ''}
+              <button class="task-icon-btn" title="Edit trip" onclick="toggleTripEdit('${tk}')">✏️</button>
+            </div>
+          </div>
+          <div class="trip-desc">${desc}</div>
+          <div class="trip-meta">${meta}</div>
+          <div class="trip-chips">${chips}</div>
+        </div>
+      </div>
+      <div class="trip-edit-panel" id="tep-${tk}">
+        <div style="display:grid;grid-template-columns:60px 1fr;gap:8px;align-items:center;margin-bottom:8px">
+          <div><div class="edit-label" style="margin-bottom:4px">Icon</div><input class="trip-edit-input" id="tei-icon-${tk}" value="${icon}" placeholder="🌍" style="width:60px;text-align:center;font-size:1.2rem"></div>
+          <div><div class="edit-label" style="margin-bottom:4px">City / Name</div><input class="trip-edit-input" id="tei-name-${tk}" value="${name.replace(/"/g,'&quot;')}" placeholder="City name"></div>
+        </div>
+        <div class="edit-label" style="margin-bottom:4px">Description</div>
+        <textarea class="trip-edit-input" id="tei-desc-${tk}" rows="2" style="resize:vertical;margin-bottom:8px">${desc}</textarea>
+        <div class="edit-label" style="margin-bottom:4px">Dates / logistics</div>
+        <input class="trip-edit-input" id="tei-meta-${tk}" value="${meta.replace(/"/g,'&quot;')}" placeholder="Dates, cost, duration…" style="margin-bottom:8px">
+        <div class="edit-label" style="margin-bottom:4px">Checklist items</div>
+        <div class="chip-edit-wrap" id="chips-edit-${tk}">${chipEditItems}</div>
+        <input class="chip-add-input" id="chip-add-${tk}" placeholder="+ Type item and press Enter"
+          onkeydown="if(event.key==='Enter'&&this.value.trim()){addChip('${modKey}',${ti},this.value);this.value='';event.preventDefault();}">
+        <button class="edit-save-btn" style="margin-top:10px;display:block" onclick="saveTripEdit('${modKey}',${ti},'${containerId}')">Save changes</button>
+      </div>
+    </div>`;
+  }).join('') + `<button class="add-task-btn" style="margin-top:8px" onclick="addTrip('${modKey}','${containerId}')">+ Add side trip</button>`;
+}
+
+function toggleTripEdit(tk) {
+  document.getElementById('tep-' + tk)?.classList.toggle('open');
+}
+
+function saveTripEdit(modKey, ti, containerId) {
+  const tk = `trip_${modKey}_${ti}`;
+  S[tk+'_name'] = document.getElementById('tei-name-'+tk)?.value || '';
+  S[tk+'_desc'] = document.getElementById('tei-desc-'+tk)?.value || '';
+  S[tk+'_meta'] = document.getElementById('tei-meta-'+tk)?.value || '';
+  S[tk+'_icon'] = document.getElementById('tei-icon-'+tk)?.value || '📍';
+  setS(S);
+  const trips = _tripStore[modKey] || [];
+  renderTrips(containerId, trips, modKey);
+  showToast('Trip saved ✓');
+}
+
+function deleteChip(modKey, ti) {
+  // chips editing is done inline in the edit panel — re-render on delete
+  const tk = `trip_${modKey}_${ti}`;
+  const trips = _tripStore[modKey] || [];
+  const current = S[tk+'_chips'] ?? (trips[ti]?.chips || []);
+  // find which chip by position in DOM
+  const wrap = document.getElementById('chips-edit-'+tk);
+  const items = wrap ? wrap.querySelectorAll('.chip-edit') : [];
+  // called with button context — use event
+  const btn = event.target;
+  const chipEl = btn.closest('.chip-edit');
+  const idx = Array.from(items).indexOf(chipEl);
+  if (idx === -1) return;
+  S[tk+'_chips'] = current.filter((_,i) => i !== idx);
+  setS(S);
+  chipEl.remove();
+  // rebuild chip-edit-wrap display
+  const remaining = S[tk+'_chips'];
+  wrap.innerHTML = remaining.map((c,ci) =>
+    `<div class="chip-edit"><span>${c}</span><button class="chip-del" onclick="deleteChip('${modKey}',${ti})">✕</button></div>`
+  ).join('');
+}
+
+function addChip(modKey, ti, val) {
+  if (!val.trim()) return;
+  const tk = `trip_${modKey}_${ti}`;
+  const trips = _tripStore[modKey] || [];
+  const current = S[tk+'_chips'] ?? (trips[ti]?.chips || []);
+  S[tk+'_chips'] = [...current, val.trim()];
+  setS(S);
+  const wrap = document.getElementById('chips-edit-'+tk);
+  if (wrap) {
+    const div = document.createElement('div');
+    div.className = 'chip-edit';
+    div.innerHTML = `<span>${val.trim()}</span><button class="chip-del" onclick="deleteChip('${modKey}',${ti})">✕</button>`;
+    wrap.appendChild(div);
+  }
+  showToast('Item added');
+}
+
+function addTrip(modKey, containerId) {
+  if (!S['ctrips_' + modKey]) S['ctrips_' + modKey] = [];
+  S['ctrips_' + modKey].push({ name:'New City', desc:'Add a description…', meta:'Dates TBD', icon:'📍', chips:[] });
+  setS(S);
+  renderTrips(containerId, _tripStore[modKey] || [], modKey);
+  showToast('Trip added');
+}
+
+function deleteTrip(modKey, ti) {
+  const trips = _tripStore[modKey] || [];
+  const customStart = trips.length;
+  if (ti < customStart) return; // can't delete built-in
+  const ci = ti - customStart;
+  if (!S['ctrips_' + modKey]) return;
+  S['ctrips_' + modKey].splice(ci, 1);
+  setS(S);
+  renderTrips('trip-' + modKey, trips, modKey);
+  showToast('Trip removed');
+}
+
+function toggleChip(k, el) {
+  S[k] = !S[k];
+  setS(S);
+  el.classList.toggle('checked', !!S[k]);
+  showToast();
+}
+
+// ─── BUDGET ──────────────────────────────────────────────────
+const BUDGET_ROWS = [
+  { key:'flights',  icon:'✈️',  label:'Flights' },
+  { key:'accom',    icon:'🏨',  label:'Accommodation' },
+  { key:'food',     icon:'🍽',  label:'Food' },
+  { key:'shopping', icon:'🛍',  label:'Shopping' },
+];
+const DEFAULT_BUDGET = 3200;
+
+function getBudgetData(mod) {
+  if (!S['bv2_' + mod]) {
+    S['bv2_' + mod] = { total: DEFAULT_BUDGET, rows: {}, customRows: [] };
+    BUDGET_ROWS.forEach(r => S['bv2_' + mod].rows[r.key] = { amount: '', note: '' });
+  }
+  if (!S['bv2_' + mod].customRows) S['bv2_' + mod].customRows = [];
+  return S['bv2_' + mod];
+}
+
+function getAllBudgetRows(mod) {
+  const d = getBudgetData(mod);
+  const custom = (d.customRows || []).map(r => ({ ...r, isCustom: true }));
+  return [...BUDGET_ROWS, ...custom];
+}
+
+function calcSpent(mod) {
+  const d = getBudgetData(mod);
+  const allRows = getAllBudgetRows(mod);
+  return allRows.reduce((s, r) => s + (parseFloat(d.rows[r.key]?.amount) || 0), 0);
+}
+
+function renderBudget(containerId, mod) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const d = getBudgetData(mod);
+  const total = parseFloat(d.total) || DEFAULT_BUDGET;
+  const allRows = getAllBudgetRows(mod);
+  const spent = calcSpent(mod);
+  const rem = total - spent;
+  const pct = total ? Math.min(100, Math.round(spent / total * 100)) : 0;
+  const over = spent > total;
+
+  const rowsHtml = allRows.map((r, ri) => {
+    const row = d.rows[r.key] || { amount: '', note: '' };
+    return `<tr>
+      <td class="budget-row-icon">${r.icon}</td>
+      <td class="budget-row-label">${r.isCustom
+        ? `<input style="border:none;background:transparent;font-weight:500;font-size:0.88rem;color:var(--ink);outline:none;width:100%" value="${r.label}" oninput="renameBudgetCat('${mod}',${ri - BUDGET_ROWS.length},this.value)">`
+        : r.label}</td>
+      <td><input class="budget-row-note" type="text" value="${row.note||''}" placeholder="e.g. SQ 306, Hostelle…" oninput="updateBudgetNote('${mod}','${r.key}',this.value)"></td>
+      <td>
+        <div class="budget-row-input-wrap">
+          <span class="budget-row-currency">S$</span>
+          <input class="budget-row-input" type="number" value="${row.amount||''}" placeholder="0" oninput="updateBudgetRow('${mod}','${r.key}',this.value)">
+          ${r.isCustom ? `<button onclick="deleteBudgetCat('${mod}',${ri - BUDGET_ROWS.length})" style="background:none;border:none;color:var(--terracotta);cursor:pointer;font-size:0.8rem;padding:0 0 0 4px" title="Remove">✕</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="budget-total-card">
+      <div>
+        <div class="budget-left-label">Budget</div>
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span style="font-family:'DM Mono',monospace;font-size:1rem;color:#888">SGD</span>
+          <input id="btotal-${mod}" type="number" value="${total}"
+            style="background:transparent;border:none;border-bottom:2px solid #333;font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--yellow);font-weight:700;width:150px;outline:none;padding-bottom:2px"
+            onchange="updateBudgetTotal('${mod}',this.value)"
+            onfocus="this.style.borderBottomColor='var(--yellow)'"
+            onblur="this.style.borderBottomColor='#333'">
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:#555;margin-top:6px;letter-spacing:0.1em">CLICK TO EDIT</div>
+      </div>
+      <div class="budget-right">
+        <div class="budget-left-label">Remaining</div>
+        <div class="budget-rem-val" id="brem-${mod}" style="color:${over?'var(--terracotta)':'var(--yellow)'}">
+          S$${Math.abs(Math.round(rem)).toLocaleString()}${over?' over':''}
+        </div>
+        <div class="budget-rem-label" id="bspent-${mod}">${Math.round(spent).toLocaleString()} spent of ${Math.round(total).toLocaleString()}</div>
+      </div>
+    </div>
+    <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:24px 26px;">
+      <table class="budget-table">
+        <thead><tr>
+          <th style="width:36px"></th><th>Category</th><th>Note</th><th style="text-align:right">Amount (SGD)</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+        <tfoot><tr>
+          <td colspan="2" class="budget-tfoot-label">Total spent</td>
+          <td colspan="2">
+            <div class="budget-tfoot-total" id="bfoot-total-${mod}" style="color:${over?'var(--terracotta)':'var(--ink)'}">S$${Math.round(spent).toLocaleString()}</div>
+            <div class="budget-tfoot-remaining" id="bfoot-rem-${mod}" style="color:${over?'var(--terracotta)':'var(--green)'}">
+              ${over?'⚠ S$'+Math.round(spent-total).toLocaleString()+' over budget':'S$'+Math.round(rem).toLocaleString()+' remaining'}
+            </div>
+          </td>
+        </tr></tfoot>
+      </table>
+      <div class="budget-progress-wrap">
+        <div class="budget-progress-bar"><div class="budget-progress-fill" id="bprog-${mod}" style="width:${pct}%;background:${over?'var(--terracotta)':'var(--yellow)'}"></div></div>
+        <div class="budget-progress-labels"><span>S$0</span><span id="bprog-pct-${mod}">${pct}% used</span><span>S$${Math.round(total).toLocaleString()}</span></div>
+      </div>
+      <div id="cat-form-${mod}" style="display:none;border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:10px;background:var(--cream)">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <input id="cat-emoji-${mod}" placeholder="📌" style="width:44px;font-size:1.2rem;text-align:center;border:1px solid var(--border);border-radius:6px;padding:6px;background:var(--warm);outline:none" value="📌">
+          <input id="cat-name-${mod}" placeholder="Category name" style="flex:1;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;background:var(--warm)">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="edit-save-btn" onclick="confirmAddBudgetCat('${mod}')">Add</button>
+          <button class="edit-save-btn" style="background:var(--light);color:var(--ink)" onclick="document.getElementById('cat-form-${mod}').style.display='none'">Cancel</button>
+        </div>
+      </div>
+      <button class="budget-add-btn" onclick="(function(f){f.style.display=f.style.display==='none'?'block':'none'})(document.getElementById('cat-form-${mod}'))">+ Add category</button>
+    </div>
+
+    <div style="margin-top:28px">
+      <div class="sec-label">Side Trip Budgets</div>
+      <div id="sidetrip-budgets-${mod}"></div>
+      <div id="st-form-${mod}" style="display:none;background:var(--warm);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px">
+        <input id="st-name-${mod}" placeholder="Side trip name (e.g. Edinburgh)" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;background:var(--cream);margin-bottom:8px">
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="edit-save-btn" onclick="confirmAddSideTripBudget('${mod}')">Add</button>
+          <button class="edit-save-btn" style="background:var(--light);color:var(--ink)" onclick="document.getElementById('st-form-${mod}').style.display='none'">Cancel</button>
+        </div>
+      </div>
+      <button class="add-task-btn" onclick="(function(f){f.style.display=f.style.display==='none'?'block':'none'})(document.getElementById('st-form-${mod}'))">+ Add side trip budget table</button>
+    </div>`;
+
+  renderSideTripBudgets(mod);
+}
+
+function addBudgetCat(mod) { document.getElementById('cat-form-'+mod).style.display='block'; }
+
+function confirmAddBudgetCat(mod) {
+  const emoji = document.getElementById('cat-emoji-'+mod)?.value.trim() || '📌';
+  const label = document.getElementById('cat-name-'+mod)?.value.trim();
+  if (!label) { showToast('Enter a category name'); return; }
+  const d = getBudgetData(mod);
+  const key = 'custom_' + Date.now();
+  if (!d.customRows) d.customRows = [];
+  d.customRows.push({ key, icon: emoji, label });
+  d.rows[key] = { amount: '', note: '' };
+  setS(S);
+  renderBudget('budget-' + mod, mod);
+  showToast('Category added ✓');
+}
+
+function renameBudgetCat(mod, ci, val) {
+  const d = getBudgetData(mod);
+  if (d.customRows && d.customRows[ci]) { d.customRows[ci].label = val; setS(S); }
+}
+
+function deleteBudgetCat(mod, ci) {
+  const d = getBudgetData(mod);
+  if (!d.customRows) return;
+  const key = d.customRows[ci]?.key;
+  d.customRows.splice(ci, 1);
+  if (key) delete d.rows[key];
+  setS(S);
+  renderBudget('budget-' + mod, mod);
+  showToast('Category removed');
+}
+
+function updateBudgetTotal(mod, val) {
+  const d = getBudgetData(mod);
+  d.total = parseFloat(val) || DEFAULT_BUDGET;
+  setS(S);
+  renderBudget('budget-' + mod, mod);
+  showToast('Budget updated');
+}
+
+function updateBudgetRow(mod, key, val) {
+  const d = getBudgetData(mod);
+  if (!d.rows[key]) d.rows[key] = { amount: '', note: '' };
+  d.rows[key].amount = val;
+  setS(S);
+  const total = parseFloat(d.total) || DEFAULT_BUDGET;
+  const spent = calcSpent(mod);
+  const rem = total - spent;
+  const pct = total ? Math.min(100, Math.round(spent / total * 100)) : 0;
+  const over = spent > total;
+  const remEl = document.getElementById('brem-' + mod);
+  const spentEl = document.getElementById('bspent-' + mod);
+  const footTotal = document.getElementById('bfoot-total-' + mod);
+  const footRem = document.getElementById('bfoot-rem-' + mod);
+  const prog = document.getElementById('bprog-' + mod);
+  const progPct = document.getElementById('bprog-pct-' + mod);
+  if (remEl) { remEl.textContent = 'S$'+Math.abs(Math.round(rem)).toLocaleString()+(over?' over':''); remEl.style.color = over?'var(--terracotta)':'var(--yellow)'; }
+  if (spentEl) spentEl.textContent = Math.round(spent).toLocaleString()+' spent of '+Math.round(total).toLocaleString();
+  if (footTotal) { footTotal.textContent='S$'+Math.round(spent).toLocaleString(); footTotal.style.color=over?'var(--terracotta)':'var(--ink)'; }
+  if (footRem) { footRem.textContent=over?'⚠ S$'+Math.round(spent-total).toLocaleString()+' over budget':'S$'+Math.round(rem).toLocaleString()+' remaining'; footRem.style.color=over?'var(--terracotta)':'var(--green)'; }
+  if (prog) { prog.style.width=pct+'%'; prog.style.background=over?'var(--terracotta)':'var(--yellow)'; }
+  if (progPct) progPct.textContent=pct+'% used';
+}
+
+function updateBudgetNote(mod, key, val) {
+  const d = getBudgetData(mod);
+  if (!d.rows[key]) d.rows[key] = { amount: '', note: '' };
+  d.rows[key].note = val;
+  setS(S);
+}
+
+// keep old stubs
+function setBudget() {} function liveBudget() {} function updateCat() {} function updateCatNote() {} function calcBudget() {} function addCat() {} function renderCats() {}
+
+// ─── SIDETRIP BUDGET TABLES (per module) ─────────────────────
+function getSideTripBudgets(mod) {
+  if (!S['stb_' + mod]) S['stb_' + mod] = [];
+  return S['stb_' + mod];
+}
+
+const SIDETRIP_DEFAULT_ROWS = [
+  { key:'flights', icon:'✈️', label:'Flights' },
+  { key:'accom',   icon:'🏨', label:'Accommodation' },
+  { key:'food',    icon:'🍽', label:'Food' },
+  { key:'shopping',icon:'🛍', label:'Shopping' },
+];
+
+function renderSideTripBudgets(mod) {
+  const el = document.getElementById('sidetrip-budgets-' + mod);
+  if (!el) return;
+  const tables = getSideTripBudgets(mod);
+  if (!tables.length) { el.innerHTML = '<p style="color:var(--mid);font-size:0.82rem;font-style:italic;margin-bottom:8px">No side trip budgets yet — add one below.</p>'; return; }
+
+  el.innerHTML = tables.map((t, ti) => {
+    const name = t.name || 'Side Trip';
+    const total = parseFloat(t.total) || 0;
+    const allRows = [...SIDETRIP_DEFAULT_ROWS, ...(t.customRows || []).map(r => ({ ...r, isCustom: true }))];
+    const spent = allRows.reduce((s, r) => s + (parseFloat(t.rows?.[r.key]?.amount) || 0), 0);
+    const rem = total - spent;
+    const pct = total ? Math.min(100, Math.round(spent / total * 100)) : 0;
+    const over = spent > total;
+
+    const rowsHtml = allRows.map((r, ri) => `<tr>
+      <td class="budget-row-icon">${r.icon}</td>
+      <td class="budget-row-label">${r.isCustom
+        ? `<input style="border:none;background:transparent;font-weight:500;font-size:0.85rem;outline:none;width:100%" value="${r.label}" oninput="renameSideTripCat('${mod}',${ti},${ri - SIDETRIP_DEFAULT_ROWS.length},this.value)">`
+        : r.label}</td>
+      <td><input class="budget-row-note" type="text" value="${t.rows?.[r.key]?.note||''}" placeholder="Note…" oninput="updateSideTripNote('${mod}',${ti},'${r.key}',this.value)"></td>
+      <td><div class="budget-row-input-wrap">
+        <span class="budget-row-currency">S$</span>
+        <input class="budget-row-input" type="number" value="${t.rows?.[r.key]?.amount||''}" placeholder="0" oninput="updateSideTripRow('${mod}',${ti},'${r.key}',this.value)">
+        ${r.isCustom ? `<button onclick="deleteSideTripCat('${mod}',${ti},${ri-SIDETRIP_DEFAULT_ROWS.length})" style="background:none;border:none;color:var(--terracotta);cursor:pointer;font-size:0.8rem;padding:0 0 0 4px">✕</button>` : ''}
+      </div></td>
+    </tr>`).join('');
+
+    return `<div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <input style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;border:none;background:transparent;outline:none;color:var(--ink);flex:1" value="${name}" placeholder="Trip name" oninput="renameSideTrip('${mod}',${ti},this.value)">
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <span style="font-family:'DM Mono',monospace;font-size:0.65rem;color:#888">SGD</span>
+          <input type="number" value="${total||''}" placeholder="Budget" style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--yellow);border:none;border-bottom:1.5px solid #DDD;background:transparent;outline:none;width:90px;text-align:right" onchange="updateSideTripTotal('${mod}',${ti},this.value)">
+        </div>
+        <button onclick="deleteSideTripBudget('${mod}',${ti})" style="background:none;border:none;color:var(--terracotta);cursor:pointer;font-size:0.9rem" title="Remove">✕</button>
+      </div>
+      <div style="padding:18px">
+        <table class="budget-table"><thead><tr><th style="width:36px"></th><th>Category</th><th>Note</th><th style="text-align:right">Amount (SGD)</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+        <tfoot><tr><td colspan="2" class="budget-tfoot-label">Total</td><td colspan="2">
+          <div class="budget-tfoot-total" style="color:${over?'var(--terracotta)':'var(--ink)'}">S$${Math.round(spent).toLocaleString()}</div>
+          <div class="budget-tfoot-remaining" style="color:${over?'var(--terracotta)':'var(--green)'}">
+            ${total ? (over?'⚠ over by S$'+Math.round(spent-total).toLocaleString():'S$'+Math.round(rem).toLocaleString()+' left') : '—'}
+          </div>
+        </td></tr></tfoot></table>
+        ${total ? `<div class="budget-progress-wrap"><div class="budget-progress-bar"><div class="budget-progress-fill" style="width:${pct}%;background:${over?'var(--terracotta)':'var(--yellow)'}"></div></div><div class="budget-progress-labels"><span>S$0</span><span>${pct}% used</span><span>S$${Math.round(total).toLocaleString()}</span></div></div>` : ''}
+        <div id="stcat-form-${mod}-${ti}" style="display:none;border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:8px;background:var(--cream)">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <input id="stcat-emoji-${mod}-${ti}" value="📌" style="width:42px;font-size:1.1rem;text-align:center;border:1px solid var(--border);border-radius:6px;padding:5px;background:var(--warm);outline:none">
+            <input id="stcat-name-${mod}-${ti}" placeholder="Category name" style="flex:1;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:0.83rem;outline:none;background:var(--warm)">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="edit-save-btn" onclick="confirmAddSideTripCat('${mod}',${ti})">Add</button>
+            <button class="edit-save-btn" style="background:var(--light);color:var(--ink)" onclick="document.getElementById('stcat-form-${mod}-${ti}').style.display='none'">Cancel</button>
+          </div>
+        </div>
+        <button class="budget-add-btn" onclick="(function(f){f.style.display=f.style.display==='none'?'block':'none'})(document.getElementById('stcat-form-${mod}-${ti}'))">+ Add category</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addSideTripBudget(mod) { document.getElementById('st-form-'+mod).style.display='block'; }
+
+function confirmAddSideTripBudget(mod) {
+  const name = document.getElementById('st-name-'+mod)?.value.trim() || 'New Side Trip';
+  const tables = getSideTripBudgets(mod);
+  tables.push({ name, total: 0, rows: {}, customRows: [] });
+  S['stb_' + mod] = tables;
+  setS(S);
+  renderBudget('budget-' + mod, mod);
+  showToast('Side trip budget added ✓');
+}
+
+function deleteSideTripBudget(mod, ti) {
+  S['stb_' + mod].splice(ti, 1);
+  setS(S);
+  renderSideTripBudgets(mod);
+  showToast('Removed');
+}
+
+function renameSideTrip(mod, ti, val) { getSideTripBudgets(mod)[ti].name = val; setS(S); }
+function updateSideTripTotal(mod, ti, val) { getSideTripBudgets(mod)[ti].total = parseFloat(val)||0; setS(S); renderSideTripBudgets(mod); }
+function updateSideTripRow(mod, ti, key, val) {
+  const t = getSideTripBudgets(mod)[ti];
+  if (!t.rows) t.rows = {};
+  if (!t.rows[key]) t.rows[key] = { amount:'', note:'' };
+  t.rows[key].amount = val;
+  setS(S);
+  renderSideTripBudgets(mod);
+}
+function updateSideTripNote(mod, ti, key, val) {
+  const t = getSideTripBudgets(mod)[ti];
+  if (!t.rows) t.rows = {};
+  if (!t.rows[key]) t.rows[key] = { amount:'', note:'' };
+  t.rows[key].note = val;
+  setS(S);
+}
+function addSideTripCat(mod, ti) {
+  const f = document.getElementById('stcat-form-'+mod+'-'+ti);
+  if (f) f.style.display = 'block';
+}
+
+function confirmAddSideTripCat(mod, ti) {
+  const emoji = document.getElementById('stcat-emoji-'+mod+'-'+ti)?.value.trim() || '📌';
+  const label = document.getElementById('stcat-name-'+mod+'-'+ti)?.value.trim();
+  if (!label) { showToast('Enter a category name'); return; }
+  const t = getSideTripBudgets(mod)[ti];
+  if (!t.customRows) t.customRows = [];
+  const key = 'sc_' + Date.now();
+  t.customRows.push({ key, icon: emoji, label });
+  if (!t.rows) t.rows = {};
+  t.rows[key] = { amount:'', note:'' };
+  setS(S);
+  renderSideTripBudgets(mod);
+  showToast('Category added ✓');
+}
+function deleteSideTripCat(mod, ti, ci) {
+  const t = getSideTripBudgets(mod)[ti];
+  const key = t.customRows[ci]?.key;
+  t.customRows.splice(ci, 1);
+  if (key) delete t.rows[key];
+  setS(S);
+  renderSideTripBudgets(mod);
+}
+function renameSideTripCat(mod, ti, ci, val) {
+  getSideTripBudgets(mod)[ti].customRows[ci].label = val;
+  setS(S);
+}
+
+// ─── PROGRESS ────────────────────────────────────────────────
+const MOD_GROUPS = {
+  m1: ['m1-visa','m1-flights','m1-accom','m1-misc'],
+  m2: ['m2-flights','m2-accom','m2-prep'],
+  m3: ['m3-visa','m3-flights','m3-prep'],
+  m4: ['m4-flights','m4-prep'],
+  m5: ['m5-flights','m5-prep'],
+};
+
+function getModTasks(mod) {
+  return (MOD_GROUPS[mod] || []).flatMap(g => (TASKS[g] || []).filter(t => !S['te_' + t.id + '_deleted']));
+}
+
+function updateRing(mod) {
+  const tasks = getModTasks(mod);
+  const done = tasks.filter(t => !!S['t_' + t.id]).length;
+  const pct = tasks.length ? Math.round(done / tasks.length * 100) : 0;
+  const ring = document.getElementById('ring-' + mod);
+  const txt = document.getElementById('ring-' + mod + '-pct');
+  if (ring) ring.style.strokeDashoffset = 207.3 - (pct / 100) * 207.3;
+  if (txt) txt.textContent = pct + '%';
+}
+
+function updateAllProgress() {
+  ['m1','m2','m3','m4','m5'].forEach(updateRing);
+  const all = Object.values(TASKS).flat();
+  const done = all.filter(t => !!S['t_' + t.id]).length;
+  document.getElementById('heroDone').textContent = done + '/' + all.length;
+  document.getElementById('globalPct').textContent = Math.round(done / all.length * 100) + '% done';
+  renderOverviewSnapshot();
+}
+
+function renderOverviewSnapshot() {
+  const el = document.getElementById('overview-snapshot');
+  if (!el) return;
+  const mods = [
+    { id:'m1', label:'M1 · Company', date:'Jul 12–24, 2026', loc:'London' },
+    { id:'m2', label:'M2 · Product', date:'Oct 5–16, 2026', loc:'London' },
+    { id:'m3', label:'M3 · Start-Up', date:'Jan 11–15, 2027', loc:'Silicon Valley' },
+    { id:'m4', label:'M4 · Team', date:'Mar 15–26, 2027', loc:'London' },
+    { id:'m5', label:'M5 · World', date:'Jun 7–18, 2027', loc:'London' },
+  ];
+  el.innerHTML = mods.map(m => {
+    const tasks = getModTasks(m.id);
+    const done = tasks.filter(t => !!S['t_' + t.id]).length;
+    const pct = tasks.length ? Math.round(done / tasks.length * 100) : 0;
+    return `<div style="background:var(--warm);border:1px solid var(--border);border-radius:9px;padding:14px 18px;margin-bottom:8px;display:flex;align-items:center;gap:16px">
+      <div style="flex:1">
+        <div style="font-weight:500;font-size:0.875rem">${m.label} <span style="color:var(--mid);font-size:0.75rem">· ${m.loc}</span></div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--mid);margin-top:2px">${m.date}</div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--mid);white-space:nowrap">${done}/${tasks.length}</div>
+      <div style="width:120px">
+        <div style="height:5px;background:var(--light);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--yellow);border-radius:3px"></div></div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--mid);text-align:right;margin-top:3px">${pct}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── FAMILY BUDGET ────────────────────────────────────────────
+
+// ─── JOURNAL ─────────────────────────────────────────────────
+function saveJournalEntry() {
+  const txt = document.getElementById('journalInput').value.trim();
+  if (!txt) return;
+  if (!S.journal) S.journal = [];
+  S.journal.unshift({ d: new Date().toISOString(), t: txt });
+  setS(S);
+  document.getElementById('journalInput').value = '';
+  loadJournal();
+  showToast('Entry saved');
+}
+function loadJournal() {
+  const el = document.getElementById('journalEntries');
+  const entries = S.journal || [];
+  if (!entries.length) { el.innerHTML = '<p style="color:var(--mid);font-style:italic;font-size:0.83rem">No entries yet. Your first entry awaits ✦</p>'; return; }
+  el.innerHTML = entries.map(e => `<div class="journal-entry">
+    <div class="journal-entry-date">${new Date(e.d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
+    <div class="journal-entry-text">${e.t}</div>
+  </div>`).join('');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+function init() {
+  // Countdown
+  const dep = new Date('2026-07-10');
+  const today = new Date();
+  const days = Math.ceil((dep - today) / 86400000);
+  document.getElementById('herodays').textContent = days > 0 ? days : '🛫';
+  document.getElementById('daysLeft').textContent = days > 0 ? days + ' days to M1' : 'Bon voyage!';
+  document.getElementById('journalDate').textContent = today.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  // Render all task groups
+  Object.entries(TASKS).forEach(([key, _]) => renderTasks('tg-' + key, null));
+
+  // Render all trips
+  Object.entries(TRIPS).forEach(([mod, trips]) => renderTrips('trip-' + mod, trips, mod));
+
+  // Render all module budgets (includes sidetrip budget section)
+  ['m1','m2','m3','m4','m5'].forEach(mod => {
+    getBudgetData(mod);
+    renderBudget('budget-' + mod, mod);
+  });
+
+  updateAllProgress();
+  loadJournal();
+}
+
+initState();
+init();
+</script>
+</body>
+</html>
