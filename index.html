@@ -359,7 +359,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
   <div class="mod-header-card" id="mhcard-m2"></div>
   <div class="inner-tabs">
     <button class="inner-tab active" onclick="switchInner('m2','tasks',this)">☑ Tasks</button>
-    <button class="inner-tab" onclick="switchInner('m2','trips',this)">🗺 Side Trips · BCN + Paris</button>
+    <button class="inner-tab" onclick="switchInner('m2','trips',this)">🗺 Side Trips</button>
     <button class="inner-tab" onclick="switchInner('m2','budget',this)">💷 Budget</button>
   </div>
   <div id="m2-tasks" class="inner-panel active">
@@ -424,6 +424,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(
   <div id="m5-trips" class="inner-panel"><div id="trip-m5"></div></div>
   <div id="m5-budget" class="inner-panel"><div id="budget-m5"></div></div>
 </div>
+
+
+
 
 <!-- JOURNAL -->
 <div id="panel-journal" class="mod-panel">
@@ -571,7 +574,7 @@ const TRIPS = {
 
 // ─── SUPABASE CONFIG ─────────────────────────────────────────
 const SUPA_URL = 'https://dujaaudwjyjwqthfccpg.supabase.co';
-const SUPA_KEY = 'YOUR_ANON_KEY_HERE'; // ← paste your anon key here
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1amFhdWR3anlqd3F0aGZjY3BnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MjEzNzMsImV4cCI6MjA5MzE5NzM3M30.zWYJ2ZMWuxddLr0eU_ExQAagTbel7WgahWpO2BD92N0'; // ← paste your anon key here
 const SUPA_ROW = 'intransit_v1'; // unique key for your data row
 
 // ─── STATE ───────────────────────────────────────────────────
@@ -1144,6 +1147,26 @@ function toggleChip(k, el) {
   showToast();
 }
 
+
+// ─── FX RATES & CURRENCY CONFIG ──────────────────────────────
+const MOD_CURRENCY = {
+  m1: { code:'GBP', symbol:'£', defaultRate: 1.72 },
+  m2: { code:'GBP', symbol:'£', defaultRate: 1.72 },
+  m3: { code:'USD', symbol:'$', defaultRate: 1.35 },
+  m4: { code:'GBP', symbol:'£', defaultRate: 1.72 },
+  m5: { code:'GBP', symbol:'£', defaultRate: 1.72 },
+};
+const SIDETRIP_CURRENCY = { code:'EUR', symbol:'€', defaultRate: 1.48 };
+
+function getRate(mod) {
+  return parseFloat(S['fx_rate_' + mod]) || MOD_CURRENCY[mod]?.defaultRate || 1.72;
+}
+function getSideTripRate(mod, ti) {
+  return parseFloat(S['stfx_' + mod + '_' + ti]) || SIDETRIP_CURRENCY.defaultRate;
+}
+function sgdToLocal(sgd, rate) { return sgd ? Math.round((parseFloat(sgd) / rate) * 100) / 100 : ''; }
+function localToSgd(local, rate) { return local ? Math.round((parseFloat(local) * rate) * 100) / 100 : ''; }
+
 // ─── BUDGET ──────────────────────────────────────────────────
 const BUDGET_ROWS = [
   { key:'flights',  icon:'✈️',  label:'Flights' },
@@ -1185,18 +1208,29 @@ function renderBudget(containerId, mod) {
   const pct = total ? Math.min(100, Math.round(spent / total * 100)) : 0;
   const over = spent > total;
 
+  const cur = MOD_CURRENCY[mod] || { code:'GBP', symbol:'£', defaultRate: 1.72 };
+  const rate = getRate(mod);
   const rowsHtml = allRows.map((r, ri) => {
     const row = d.rows[r.key] || { amount: '', note: '' };
+    const localVal = row.amount ? sgdToLocal(row.amount, rate) : '';
     return `<tr>
       <td class="budget-row-icon">${r.icon}</td>
       <td class="budget-row-label">${r.isCustom
         ? `<input style="border:none;background:transparent;font-weight:500;font-size:0.88rem;color:var(--ink);outline:none;width:100%" value="${r.label}" oninput="renameBudgetCat('${mod}',${ri - BUDGET_ROWS.length},this.value)">`
         : r.label}</td>
-      <td><input class="budget-row-note" type="text" value="${row.note||''}" placeholder="e.g. SQ 306, Hostelle…" oninput="updateBudgetNote('${mod}','${r.key}',this.value)"></td>
+      <td><input class="budget-row-note" type="text" value="${row.note||''}" placeholder="Note…" oninput="updateBudgetNote('${mod}','${r.key}',this.value)"></td>
       <td>
         <div class="budget-row-input-wrap">
           <span class="budget-row-currency">S$</span>
-          <input class="budget-row-input" type="number" value="${row.amount||''}" placeholder="0" oninput="updateBudgetRow('${mod}','${r.key}',this.value)">
+          <input class="budget-row-input" id="bsgd-${mod}-${r.key}" type="number" value="${row.amount||''}" placeholder="0"
+            oninput="onBudgetSGD('${mod}','${r.key}',this.value)">
+        </div>
+      </td>
+      <td>
+        <div class="budget-row-input-wrap">
+          <span class="budget-row-currency">${cur.symbol}</span>
+          <input class="budget-row-input" id="bloc-${mod}-${r.key}" type="number" value="${localVal}" placeholder="0"
+            oninput="onBudgetLocal('${mod}','${r.key}',this.value)">
           ${r.isCustom ? `<button onclick="deleteBudgetCat('${mod}',${ri - BUDGET_ROWS.length})" style="background:none;border:none;color:var(--terracotta);cursor:pointer;font-size:0.8rem;padding:0 0 0 4px" title="Remove">✕</button>` : ''}
         </div>
       </td>
@@ -1228,22 +1262,45 @@ function renderBudget(containerId, mod) {
     <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:24px 26px;">
       <table class="budget-table">
         <thead><tr>
-          <th style="width:36px"></th><th>Category</th><th>Note</th><th style="text-align:right">Amount (SGD)</th>
+          <th style="width:32px"></th><th>Category</th><th>Note</th>
+          <th style="text-align:right">SGD</th>
+          <th style="text-align:right">${cur.symbol} ${cur.code}</th>
         </tr></thead>
         <tbody>${rowsHtml}</tbody>
         <tfoot><tr>
-          <td colspan="2" class="budget-tfoot-label">Total spent</td>
-          <td colspan="2">
+          <td colspan="3" class="budget-tfoot-label">Total spent</td>
+          <td style="text-align:right;padding:16px 0 4px">
             <div class="budget-tfoot-total" id="bfoot-total-${mod}" style="color:${over?'var(--terracotta)':'var(--ink)'}">S$${Math.round(spent).toLocaleString()}</div>
             <div class="budget-tfoot-remaining" id="bfoot-rem-${mod}" style="color:${over?'var(--terracotta)':'var(--green)'}">
-              ${over?'⚠ S$'+Math.round(spent-total).toLocaleString()+' over budget':'S$'+Math.round(rem).toLocaleString()+' remaining'}
+              ${over?'⚠ over by S$'+Math.round(spent-total).toLocaleString():'S$'+Math.round(rem).toLocaleString()+' left'}
             </div>
+          </td>
+          <td style="text-align:right;padding:16px 0 4px">
+            <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--mid)">${cur.symbol}${Math.round(sgdToLocal(spent,rate)||0).toLocaleString()}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--mid);margin-top:3px">${cur.code} equivalent</div>
           </td>
         </tr></tfoot>
       </table>
       <div class="budget-progress-wrap">
         <div class="budget-progress-bar"><div class="budget-progress-fill" id="bprog-${mod}" style="width:${pct}%;background:${over?'var(--terracotta)':'var(--yellow)'}"></div></div>
         <div class="budget-progress-labels"><span>S$0</span><span id="bprog-pct-${mod}">${pct}% used</span><span>S$${Math.round(total).toLocaleString()}</span></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <div style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--mid);letter-spacing:0.1em">EXCHANGE RATE</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="bfx-text-${mod}" style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--mid)">SGD 1 = ${cur.symbol}${(1/rate).toFixed(4)} ${cur.code}</span>
+          <div id="bfx-edit-${mod}" style="display:none;align-items:center;gap:5px">
+            <span style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--mid)">SGD 1 =</span>
+            <input type="number" step="0.01" id="bfx-input-${mod}" value="${rate}"
+              style="width:58px;border:1px solid var(--border);border-radius:6px;padding:4px 7px;font-family:'DM Mono',monospace;font-size:0.75rem;text-align:right;outline:none;background:var(--cream)"
+              onkeydown="if(event.key==='Enter')saveFxRate('${mod}')"
+              oninput="updateFxRate('${mod}',this.value)">
+            <span style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--mid)">${cur.symbol} ${cur.code}</span>
+            <button onclick="saveFxRate('${mod}')" style="background:var(--green);color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:0.7rem;cursor:pointer">✓</button>
+          </div>
+          <button id="bfx-btn-${mod}" onclick="toggleFxEdit('${mod}')"
+            style="background:none;border:1px solid var(--border);border-radius:5px;width:24px;height:24px;cursor:pointer;font-size:0.7rem;color:var(--mid);display:flex;align-items:center;justify-content:center">✏️</button>
+        </div>
       </div>
       <div id="cat-form-${mod}" style="display:none;border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:10px;background:var(--cream)">
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
@@ -1314,6 +1371,42 @@ function updateBudgetTotal(mod, val) {
   showToast('Budget updated');
 }
 
+function onBudgetSGD(mod, key, val) {
+  // SGD entered → compute local
+  const rate = getRate(mod);
+  const cur = MOD_CURRENCY[mod] || { symbol:'£' };
+  const localEl = document.getElementById('bloc-' + mod + '-' + key);
+  if (localEl && val) localEl.value = sgdToLocal(val, rate);
+  else if (localEl) localEl.value = '';
+  updateBudgetRow(mod, key, val);
+}
+
+function onBudgetLocal(mod, key, val) {
+  // Local currency entered → compute SGD
+  const rate = getRate(mod);
+  const sgdVal = val ? localToSgd(val, rate) : '';
+  const sgdEl = document.getElementById('bsgd-' + mod + '-' + key);
+  if (sgdEl) sgdEl.value = sgdVal;
+  updateBudgetRow(mod, key, sgdVal);
+}
+
+function updateFxRate(mod, val) {
+  S['fx_rate_' + mod] = parseFloat(val) || MOD_CURRENCY[mod]?.defaultRate;
+  setS(S);
+  const rate = getRate(mod);
+  const cur = MOD_CURRENCY[mod] || { symbol:'£', code:'GBP' };
+  // update local currency fields live
+  const allRows = getAllBudgetRows(mod);
+  allRows.forEach(r => {
+    const sgdEl = document.getElementById('bsgd-' + mod + '-' + r.key);
+    const locEl = document.getElementById('bloc-' + mod + '-' + r.key);
+    if (sgdEl?.value && locEl) locEl.value = sgdToLocal(sgdEl.value, rate);
+  });
+  // update text display
+  const textEl = document.getElementById('bfx-text-' + mod);
+  if (textEl) textEl.textContent = 'SGD 1 = ' + cur.symbol + (1/rate).toFixed(4) + ' ' + cur.code;
+}
+
 function updateBudgetRow(mod, key, val) {
   const d = getBudgetData(mod);
   if (!d.rows[key]) d.rows[key] = { amount: '', note: '' };
@@ -1322,6 +1415,8 @@ function updateBudgetRow(mod, key, val) {
   const total = parseFloat(d.total) || DEFAULT_BUDGET;
   const spent = calcSpent(mod);
   const rem = total - spent;
+  const rate = getRate(mod);
+  const cur = MOD_CURRENCY[mod] || { symbol:'£' };
   const pct = total ? Math.min(100, Math.round(spent / total * 100)) : 0;
   const over = spent > total;
   const remEl = document.getElementById('brem-' + mod);
@@ -1330,10 +1425,10 @@ function updateBudgetRow(mod, key, val) {
   const footRem = document.getElementById('bfoot-rem-' + mod);
   const prog = document.getElementById('bprog-' + mod);
   const progPct = document.getElementById('bprog-pct-' + mod);
-  if (remEl) { remEl.textContent = 'S$'+Math.abs(Math.round(rem)).toLocaleString()+(over?' over':''); remEl.style.color = over?'var(--terracotta)':'var(--yellow)'; }
-  if (spentEl) spentEl.textContent = Math.round(spent).toLocaleString()+' spent of '+Math.round(total).toLocaleString();
+  if (remEl) { remEl.textContent='S$'+Math.abs(Math.round(rem)).toLocaleString()+(over?' over':''); remEl.style.color=over?'var(--terracotta)':'var(--yellow)'; }
+  if (spentEl) spentEl.textContent=Math.round(spent).toLocaleString()+' spent of '+Math.round(total).toLocaleString();
   if (footTotal) { footTotal.textContent='S$'+Math.round(spent).toLocaleString(); footTotal.style.color=over?'var(--terracotta)':'var(--ink)'; }
-  if (footRem) { footRem.textContent=over?'⚠ S$'+Math.round(spent-total).toLocaleString()+' over budget':'S$'+Math.round(rem).toLocaleString()+' remaining'; footRem.style.color=over?'var(--terracotta)':'var(--green)'; }
+  if (footRem) { footRem.textContent=over?'⚠ over by S$'+Math.round(spent-total).toLocaleString():'S$'+Math.round(rem).toLocaleString()+' left'; footRem.style.color=over?'var(--terracotta)':'var(--green)'; }
   if (prog) { prog.style.width=pct+'%'; prog.style.background=over?'var(--terracotta)':'var(--yellow)'; }
   if (progPct) progPct.textContent=pct+'% used';
 }
@@ -1376,18 +1471,30 @@ function renderSideTripBudgets(mod) {
     const pct = total ? Math.min(100, Math.round(spent / total * 100)) : 0;
     const over = spent > total;
 
-    const rowsHtml = allRows.map((r, ri) => `<tr>
-      <td class="budget-row-icon">${r.icon}</td>
-      <td class="budget-row-label">${r.isCustom
-        ? `<input style="border:none;background:transparent;font-weight:500;font-size:0.85rem;outline:none;width:100%" value="${r.label}" oninput="renameSideTripCat('${mod}',${ti},${ri - SIDETRIP_DEFAULT_ROWS.length},this.value)">`
-        : r.label}</td>
-      <td><input class="budget-row-note" type="text" value="${t.rows?.[r.key]?.note||''}" placeholder="Note…" oninput="updateSideTripNote('${mod}',${ti},'${r.key}',this.value)"></td>
-      <td><div class="budget-row-input-wrap">
-        <span class="budget-row-currency">S$</span>
-        <input class="budget-row-input" type="number" value="${t.rows?.[r.key]?.amount||''}" placeholder="0" oninput="updateSideTripRow('${mod}',${ti},'${r.key}',this.value)">
-        ${r.isCustom ? `<button onclick="deleteSideTripCat('${mod}',${ti},${ri-SIDETRIP_DEFAULT_ROWS.length})" style="background:none;border:none;color:var(--terracotta);cursor:pointer;font-size:0.8rem;padding:0 0 0 4px">✕</button>` : ''}
-      </div></td>
-    </tr>`).join('');
+    const stRate = getSideTripRate(mod, ti);
+    const stCur = SIDETRIP_CURRENCY;
+    const rowsHtml = allRows.map((r, ri) => {
+      const sgdAmt = t.rows?.[r.key]?.amount || '';
+      const localAmt = sgdAmt ? sgdToLocal(sgdAmt, stRate) : '';
+      return `<tr>
+        <td class="budget-row-icon">${r.icon}</td>
+        <td class="budget-row-label">${r.isCustom
+          ? `<input style="border:none;background:transparent;font-weight:500;font-size:0.85rem;outline:none;width:100%" value="${r.label}" oninput="renameSideTripCat('${mod}',${ti},${ri - SIDETRIP_DEFAULT_ROWS.length},this.value)">`
+          : r.label}</td>
+        <td><input class="budget-row-note" type="text" value="${t.rows?.[r.key]?.note||''}" placeholder="Note…" oninput="updateSideTripNote('${mod}',${ti},'${r.key}',this.value)"></td>
+        <td><div class="budget-row-input-wrap">
+          <span class="budget-row-currency">S$</span>
+          <input class="budget-row-input" id="stsgd-${mod}-${ti}-${r.key}" type="number" value="${sgdAmt}" placeholder="0"
+            oninput="onSideTripSGD('${mod}',${ti},'${r.key}',this.value)">
+          ${r.isCustom ? `<button onclick="deleteSideTripCat('${mod}',${ti},${ri-SIDETRIP_DEFAULT_ROWS.length})" style="background:none;border:none;color:var(--terracotta);cursor:pointer;font-size:0.8rem;padding:0 0 0 4px">✕</button>` : ''}
+        </div></td>
+        <td><div class="budget-row-input-wrap">
+          <span class="budget-row-currency">€</span>
+          <input class="budget-row-input" id="steur-${mod}-${ti}-${r.key}" type="number" value="${localAmt}" placeholder="0"
+            oninput="onSideTripEUR('${mod}',${ti},'${r.key}',this.value)">
+        </div></td>
+      </tr>`;
+    }).join('');
 
     return `<div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden">
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px">
@@ -1399,15 +1506,39 @@ function renderSideTripBudgets(mod) {
         <button onclick="deleteSideTripBudget('${mod}',${ti})" style="background:none;border:none;color:var(--terracotta);cursor:pointer;font-size:0.9rem" title="Remove">✕</button>
       </div>
       <div style="padding:18px">
-        <table class="budget-table"><thead><tr><th style="width:36px"></th><th>Category</th><th>Note</th><th style="text-align:right">Amount (SGD)</th></tr></thead>
+        <table class="budget-table"><thead><tr><th style="width:32px"></th><th>Category</th><th>Note</th><th style="text-align:right">SGD</th><th style="text-align:right">€ EUR</th></tr></thead>
         <tbody>${rowsHtml}</tbody>
-        <tfoot><tr><td colspan="2" class="budget-tfoot-label">Total</td><td colspan="2">
-          <div class="budget-tfoot-total" style="color:${over?'var(--terracotta)':'var(--ink)'}">S$${Math.round(spent).toLocaleString()}</div>
-          <div class="budget-tfoot-remaining" style="color:${over?'var(--terracotta)':'var(--green)'}">
-            ${total ? (over?'⚠ over by S$'+Math.round(spent-total).toLocaleString():'S$'+Math.round(rem).toLocaleString()+' left') : '—'}
-          </div>
-        </td></tr></tfoot></table>
+        <tfoot><tr>
+          <td colspan="3" class="budget-tfoot-label">Total</td>
+          <td style="text-align:right;padding:12px 0 4px">
+            <div class="budget-tfoot-total" style="color:${over?'var(--terracotta)':'var(--ink)'};font-size:1.1rem">S$${Math.round(spent).toLocaleString()}</div>
+            <div class="budget-tfoot-remaining" style="color:${over?'var(--terracotta)':'var(--green)'}">
+              ${total ? (over?'⚠ over by S$'+Math.round(spent-total).toLocaleString():'S$'+Math.round(rem).toLocaleString()+' left') : '—'}
+            </div>
+          </td>
+          <td style="text-align:right;padding:12px 0 4px">
+            <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--mid)">€${Math.round(sgdToLocal(spent,stRate)||0).toLocaleString()}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--mid);margin-top:2px">EUR equiv.</div>
+          </td>
+        </tr></tfoot></table>
         ${total ? `<div class="budget-progress-wrap"><div class="budget-progress-bar"><div class="budget-progress-fill" style="width:${pct}%;background:${over?'var(--terracotta)':'var(--yellow)'}"></div></div><div class="budget-progress-labels"><span>S$0</span><span>${pct}% used</span><span>S$${Math.round(total).toLocaleString()}</span></div></div>` : ''}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+          <div style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--mid);letter-spacing:0.1em">EXCHANGE RATE</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span id="stfx-text-${mod}-${ti}" style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--mid)">SGD 1 = €${(1/stRate).toFixed(4)} EUR</span>
+            <div id="stfx-edit-${mod}-${ti}" style="display:none;align-items:center;gap:5px">
+              <span style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--mid)">SGD 1 =</span>
+              <input type="number" step="0.01" id="stfx-input-${mod}-${ti}" value="${stRate}"
+                style="width:58px;border:1px solid var(--border);border-radius:6px;padding:4px 7px;font-family:'DM Mono',monospace;font-size:0.75rem;text-align:right;outline:none;background:var(--cream)"
+                onkeydown="if(event.key==='Enter')saveSideTripFxRate('${mod}',${ti})"
+                oninput="updateSideTripFxRate('${mod}',${ti},this.value)">
+              <span style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--mid)">€ EUR</span>
+              <button onclick="saveSideTripFxRate('${mod}',${ti})" style="background:var(--green);color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:0.7rem;cursor:pointer">✓</button>
+            </div>
+            <button onclick="toggleStFxEdit('${mod}',${ti})"
+              style="background:none;border:1px solid var(--border);border-radius:5px;width:24px;height:24px;cursor:pointer;font-size:0.7rem;color:var(--mid);display:flex;align-items:center;justify-content:center">✏️</button>
+          </div>
+        </div>
         <div id="stcat-form-${mod}-${ti}" style="display:none;border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:8px;background:var(--cream)">
           <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
             <input id="stcat-emoji-${mod}-${ti}" value="📌" style="width:42px;font-size:1.1rem;text-align:center;border:1px solid var(--border);border-radius:6px;padding:5px;background:var(--warm);outline:none">
@@ -1424,6 +1555,57 @@ function renderSideTripBudgets(mod) {
   }).join('');
 }
 
+function toggleFxEdit(mod) {
+  const textEl = document.getElementById('bfx-text-' + mod);
+  const editEl = document.getElementById('bfx-edit-' + mod);
+  const btnEl  = document.getElementById('bfx-btn-' + mod);
+  if (!textEl || !editEl) return;
+  const isEditing = editEl.style.display !== 'none';
+  textEl.style.display = isEditing ? 'inline' : 'none';
+  editEl.style.display = isEditing ? 'none' : 'flex';
+  if (!isEditing) document.getElementById('bfx-input-' + mod)?.focus();
+}
+
+function saveFxRate(mod) {
+  const val = document.getElementById('bfx-input-' + mod)?.value;
+  if (val) updateFxRate(mod, val);
+  toggleFxEdit(mod);
+}
+
+function toggleStFxEdit(mod, ti) {
+  const textEl = document.getElementById('stfx-text-' + mod + '-' + ti);
+  const editEl = document.getElementById('stfx-edit-' + mod + '-' + ti);
+  if (!textEl || !editEl) return;
+  const isEditing = editEl.style.display !== 'none';
+  textEl.style.display = isEditing ? 'inline' : 'none';
+  editEl.style.display = isEditing ? 'none' : 'flex';
+  if (!isEditing) document.getElementById('stfx-input-' + mod + '-' + ti)?.focus();
+}
+
+function saveSideTripFxRate(mod, ti) {
+  const val = document.getElementById('stfx-input-' + mod + '-' + ti)?.value;
+  if (val) updateSideTripFxRate(mod, ti, val);
+  toggleStFxEdit(mod, ti);
+}
+
+function onSideTripSGD(mod, ti, key, val) {
+  const rate = getSideTripRate(mod, ti);
+  const eurEl = document.getElementById('steur-'+mod+'-'+ti+'-'+key);
+  if (eurEl) eurEl.value = val ? sgdToLocal(val, rate) : '';
+  updateSideTripRow(mod, ti, key, val);
+}
+function onSideTripEUR(mod, ti, key, val) {
+  const rate = getSideTripRate(mod, ti);
+  const sgdVal = val ? localToSgd(val, rate) : '';
+  const sgdEl = document.getElementById('stsgd-'+mod+'-'+ti+'-'+key);
+  if (sgdEl) sgdEl.value = sgdVal;
+  updateSideTripRow(mod, ti, key, sgdVal);
+}
+function updateSideTripFxRate(mod, ti, val) {
+  S['stfx_'+mod+'_'+ti] = parseFloat(val) || SIDETRIP_CURRENCY.defaultRate;
+  setS(S);
+  renderSideTripBudgets(mod);
+}
 function addSideTripBudget(mod) { document.getElementById('st-form-'+mod).style.display='block'; }
 
 function confirmAddSideTripBudget(mod) {
@@ -1563,10 +1745,11 @@ function saveJournalEntry() {
   setS(S);
   document.getElementById('journalInput').value = '';
   loadJournal();
-  showToast('Entry saved');
+  showToast('Entry saved ✓');
 }
 function loadJournal() {
   const el = document.getElementById('journalEntries');
+  if (!el) return;
   const entries = S.journal || [];
   if (!entries.length) { el.innerHTML = '<p style="color:var(--mid);font-style:italic;font-size:0.83rem">No entries yet. Your first entry awaits ✦</p>'; return; }
   el.innerHTML = entries.map(e => `<div class="journal-entry">
